@@ -58,4 +58,4 @@ See the [Figure 1](scripts/Main/Figure1/README.md) and
 [Figure 2](scripts/Main/Figure2/README.md) guides for panel selections.
 Appendix commands are listed in their experiment READMEs. Most load saved data;
 the [redundant-arm figure workflow](scripts/Appendix/Arm_redundant_task/README.md)
-runs full simulations because its figure datasets are not bundled.
+runs full simulations because its figure datasets are not included.
