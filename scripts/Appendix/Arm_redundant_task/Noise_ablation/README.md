@@ -21,6 +21,15 @@ without simulation or figures. Reruns save to
 when reading a partial run. `--reoptimize` with `--simulate` also recomputes
 baseline full-model policies. Use `--help` for all options.
 
+Published JLD2 datasets:
+
+| File | Contents |
+|---|---|
+| `behavioral_variability.jld2` | 20-level component variances, analytical/Monte Carlo summaries and relative changes |
+| `original_fixed_policy_ablation.jld2` | Full/ablated x/z variances and relative-variance reductions |
+| `original_full_model_policies.jld2` | All 20 TOD/LCO K/L sequences, grid and completion flags |
+| `external_noise_robustness.jld2` | Multipliers 1, 5 and 10: gains, costs, variances, ablations and histories; default tables select 10 |
+
 ## Settings and definitions
 
 The [arm model](../README.md) uses 6 states, 9 controls, 3 angle observations,
@@ -45,9 +54,9 @@ reductions cannot be summed into a measured combined effect. Raw saved
 percentage fields refer to variance; printed SD tables use square roots.
 High-noise LCO cost improvements are 0%, 8.7661%, 25.2846%, 40.2810% and 52.1711%.
 Raw Monte Carlo trajectories are not included; seeded reruns need not reproduce
-saved sample statistics exactly.
+saved sample statistics exactly. Analytical ablations can be recomputed
+from the included full-model gains.
 
 `noise_ablation.jl` is the entry point, `noise_statistics.jl` loads data and
 prints tables, `noise_experiments.jl` runs experiments, and
-`component_variances.jl` propagates exact moments. See the
-[dataset guide](../../../../data/published/Appendix/Arm_redundant_task/Noise_ablation/README.md).
+`component_variances.jl` propagates exact moments.

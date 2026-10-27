@@ -21,6 +21,20 @@ The default prints saved tables from `data/published/Appendix/Reaching_identifia
 No figures are generated. `--experiment=NAME` selects `overestimation`,
 `noise_sources` or `underestimation`. Use `--help` for options.
 
+Available JLD2 datasets:
+
+| File/directory | Contents |
+|---|---|
+| `sensory_overestimation.jld2` | A: all 21 assumed-noise conditions, gains, costs and behavioral summaries |
+| `matched_noise_sources.jld2` | B: 100 comparisons, 80 reoptimized external-noise policies and extended statistics |
+| `candidate_noise_grids.jld2` | All 125 candidate policies, costs, variability and completion flags |
+| `sensory_underestimation.jld2` | C: ten assumed-noise and thirteen internal-noise conditions, gains, costs and summaries |
+| `reference/` | Shared model/gains/settings in `sweep.jld2`, plus full TOD/LCO trajectories by noise level |
+
+The reference has 20 internal-noise levels and 2,000 trials per method/level;
+trajectory axes are `(dimension,trial,time)`. A/B reuse this reference. Default
+tables read summary files without loading the large trajectories.
+
 ## Settings
 
 The reaching model has 6 states, 9 controls, 3 observations, T=41, Δt=0.01 s
@@ -60,12 +74,12 @@ correct-model baseline. B's PCA uses centered trials over `2:39` and default
 The multiplicative grids each fail to bracket 13/20 targets; 12/20 achieved
 comparisons per grid exceed 1% endpoint-SD error. Unbracketed nearest-grid
 results are not successful matches. Some gain/velocity trends have small
-reversals. Summary datasets do not include all condition-level trajectories
-or optimization histories; the shared internal-reference trials are included.
+reversals. The A–C summary files omit per-condition trajectories and
+optimization histories; the shared internal-reference trials and histories
+are included.
 Monte Carlo reruns need not match saved draws exactly.
 
 `reaching_identifiability.jl` is the entry point; `identifiability_statistics.jl`
 prints comparisons, and `identifiability_simulation.jl` dispatches
 `sensory_overestimation.jl`, `matched_noise_sources.jl` and
-`sensory_underestimation.jl`. See the
-[dataset guide](../../../data/published/Appendix/Reaching_identifiability/README.md).
+`sensory_underestimation.jl`.

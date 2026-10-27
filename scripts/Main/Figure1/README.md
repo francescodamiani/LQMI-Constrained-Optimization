@@ -28,9 +28,29 @@ The default loads `data/published/Main/Figure1/` without simulation and writes
   method/level, followed by time-averaged Frobenius gain distances to GD.
   The final filter slice is retained although its value is not determined by this objective.
 
-LCO starts from TOD; numerical GD uses 10,000 iterations. Regularization is
-`[0]`, with fallback `[1e-10,1e-8,1e-6]`. Details and dataset contents are in the
-[data README](../../../data/published/Main/Figure1/README.md).
+LCO starts from TOD. GD uses 10,000 iterations, starting from TOD for b/c
+and LCO for e–g. Regularization is `[0]`, with fallback `[1e-10,1e-8,1e-6]`.
+Tasks use H=I, independent A/B scaled to spectral radius 0.9, C=0.2B and
+D=0.2 times the absolute entries of a separately drawn stable matrix. Additive
+process/sensory amplitudes are 0.2; initial means are ones and covariances zero.
+Q/R are identity except Q₁=0 and R_T=0. Problem seeds are `1234+10000*n+seed`
+(seed 51235 for d–g).
+
+## Saved data
+
+`load_fig1` in `fig1_plots.jl` loads the required JLD2 files from the data folder:
+
+| File | Contents | Panels |
+|---|---|---|
+| `Fig1_ab_data_10000_GD.jld2` | `df_min`: 240 rows of costs, runtimes, dimensions, seeds and methods | b,c |
+| `Fig1d_LCO_cost_trajectories.jld2` | Full histories, summaries, task matrices and settings | d |
+| `Fig_internal_noise_sweep_full_solutions_IC_at_LCO_solutions_10000_GD.jld2` | Fixed task, gains, objectives and Monte Carlo summaries | e,f,g |
+
+Fixed-task gain arrays have shape `(5,5,9,7)`: row, column, time, noise level.
+Gain distances average all nine time slices. The dimension archive has no
+final gains; the noise sweep has no per-trial trajectories or costs and does
+not store the GD iteration limit. Panel d displays only the early portion
+of the full saved histories.
 
 ## Rerun and replot
 

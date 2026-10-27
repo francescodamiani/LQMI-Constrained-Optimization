@@ -42,7 +42,7 @@ figures/generated/   PDF plots produced by scripts (Git-ignored)
 ```
 
 **Every experiment folder contains its own README** with commands, settings,
-and data/output locations. The [data guide](data/README.md) links all datasets.
+and data/output locations.
 
 ## Reproduce results
 
@@ -59,20 +59,3 @@ See the [Figure 1](scripts/Main/Figure1/README.md) and
 Appendix commands are listed in their experiment READMEs. Most load saved data;
 the [redundant-arm figure workflow](scripts/Appendix/Arm_redundant_task/README.md)
 runs full simulations because its figure datasets are not bundled.
-
-## Run simulations and plot the results
-
-For example, rerun the Figure 1 convergence experiment and plot its saved result:
-
-```bash
-julia scripts/Main/Figure1/fig1.jl --simulate --panels=d --tag=my_run
-julia scripts/Main/Figure1/fig1.jl --data=data/generated/Main/Figure1/my_run --panels=d
-```
-
-Figure 2 and perturbation experiments use the same `--simulate` / `--data`
-pattern. Arm figures use `--save-data` to retain simulation results. Table-only
-experiments use `--data` to inspect a saved run. Full GD and Monte Carlo sweeps
-can be expensive; consult the experiment README and `--help` before running.
-Published data and paper figures are never overwritten.
-
-Released under the [MIT License](LICENSE).
