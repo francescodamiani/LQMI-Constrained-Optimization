@@ -59,3 +59,7 @@ See the [Figure 1](scripts/Main/Figure1/README.md) and
 Appendix commands are listed in their experiment READMEs. Most load saved data;
 the [redundant-arm figure workflow](scripts/Appendix/Arm_redundant_task/README.md)
 runs full simulations because its figure datasets are not included.
+
+## License
+
+The code is licensed under the [MIT License](LICENSE).
