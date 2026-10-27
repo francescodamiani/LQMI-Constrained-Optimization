@@ -1,133 +1,74 @@
 # Figure 2: calibrated elbow reaching
 
-Figure 2 studies a 20-degree elbow reach with psychophysically informed
-noise calibration. The supplementary
-[redundant-arm task](../../Appendix/Arm_redundant_task/README.md) studies stabilization.
+Study a 20° elbow reach under increasing internal noise using TOD and LCO.
 
-## Reproduce the eight panels
+## Run
 
-Run from the repository root with **Julia 1.8.5**:
+With Julia **1.8.5**, run from the repository root:
 
 ```bash
-# Install the pinned environment once:
-julia --project=. -e 'using Pkg; Pkg.instantiate()'
-# Plot the complete archived calibrated sweep; no optimization or simulation:
 julia scripts/Main/Figure2/fig2.jl
-# Regenerate only G from the same archive:
 julia scripts/Main/Figure2/fig2.jl --panels=G
 ```
 
-Exactly eight individual PDFs are written to `figures/generated/Main/Figure2/`.
-There is no composite, panel lettering or smoke-test figure. Repeated runs
-replace the corresponding PDFs. Scripts never write to `figures/published/`.
+The default loads `data/published/Main/Figure2/` without simulation and writes
+eight PDFs to `figures/generated/Main/Figure2/`. The second command updates only G.
 
-| Panel | PDF | Quantity and statistics |
+| Panel | Quantity | PDF |
 |---|---|---|
-| A | `A_elbow_angle.pdf` | LCO elbow angle, mean ± across-trial sample SD; dashed zero target |
-| B | `B_endpoint_variability.pdf` | LCO terminal elbow sample SD divided by 20 degrees, displayed as percent |
-| C | `C_elbow_velocity.pdf` | LCO elbow velocity, mean ± across-trial sample SD, deg/s |
-| D | `D_expected_cost.pdf` | TOD/LCO analytical expected cost, logarithmic vertical axis; no sampling ribbon |
-| E | `E_logK.pdf` | TOD/LCO mean thresholded log-pseudodeterminant of filter gains |
-| F | `F_logL.pdf` | TOD/LCO corresponding control-gain measure |
-| G | `G_control_variability.pdf` | Normalized internal-state variance transmission to control, `𝒱(σ_η)/𝒱(0)`, relative to each method's own zero-noise value; baseline 1 |
-| H | `H_peak_velocity.pdf` | TOD/LCO mean of per-trial peak absolute elbow velocity ± sample SEM, deg/s |
+| A | LCO elbow angle, mean ± SD | `A_elbow_angle.pdf` |
+| B | Terminal elbow SD as a percentage of the 20° reach | `B_endpoint_variability.pdf` |
+| C | LCO elbow velocity, mean ± SD | `C_elbow_velocity.pdf` |
+| D | Analytical expected cost C | `D_expected_cost.pdf` |
+| E,F | Time-averaged gain log-pseudodeterminants | `E_logK.pdf`, `F_logL.pdf` |
+| G | Variance transmission divided by its zero-internal-noise baseline | `G_control_variability.pdf` |
+| H | Mean per-trial peak absolute elbow velocity ± SEM | `H_peak_velocity.pdf` |
 
-**Caption details:** A and C both use the saved `σ_η=0.019` condition; shading
-is SD, not SEM. A/B/C have no legends; captions should identify LCO and the
-representative noise level for A/C. B is `100 SD(θ_elbow,T)/(20°)`, not an
-increase from the zero-noise baseline, with no invented uncertainty ribbon.
-H averages each trial's `max_t abs(x[5,trial,t])`; it differs from the maximum
-of C's mean trajectory. Elbow angle is state component 2 and elbow velocity
-component 5. Velocity is labeled `v_elbow`, cost is `C`, and the abbreviated
-E/F axes read `log(|K|_p)` and `log(|L|_p)`; the time averaging remains unchanged.
-All kinematics use seconds and degrees.
+A/C use `σ_η=0.019`. B is `100 SD(θ_elbow,T)/20°`; it is not a baseline change.
+E/F sum log singular values above `1e-6`, then average gain indices `2:38`.
 
-## What each script does
+## Model and noise settings
 
-Use `fig2.jl` as the command-line entry point. The other files are included
-helpers, not separate command-line programs.
+There are 6 states, 9 controls and 3 angle observations, with 41 stored states
+at Δt=0.01 s (0.40 s). Initial angle is −20° at the elbow; initial covariances
+and the target are zero. Running/terminal state costs are
+`diag(1000,1e-5,1000,100,1e-5,100)` / `diag(1000,5000,1000,100,100,100)`;
+control cost is `0.005 I₉`.
 
-| Script | Purpose |
-|---|---|
-| [fig2.jl](fig2.jl) | Activates the root environment, selects saved-data plotting or explicit simulation, and protects published/manual output paths. |
-| [reaching_task.jl](reaching_task.jl) | Reaching model, calibrated noise matrices and costs; calls the validated core for TOD, LCO and Monte Carlo. |
-| [fig2_simulation.jl](fig2_simulation.jl) | Recomputes the 20-point sweep, initializing LCO independently from the matching TOD solution, and saves complete results. |
-| [fig2_data.jl](fig2_data.jl) | Saves/loads all numerical fields using one metadata/gain file and one complete trajectory file per noise level. |
-| [fig2_statistics.jl](fig2_statistics.jl) | Computes kinematics, endpoint SD, elbow peaks, gain measures, centered control variance, variance transmission and its ratio to the zero-noise baseline. |
-| [fig2_plots.jl](fig2_plots.jl) | Renders only the eight agreed panels from numerical results; performs no optimization. |
+External-noise amplitudes are
+`σ_ξ=0.01`, `σ_ω=deg2rad(0.9)`, `σ_ϵ=0.10`, `σ_ρ=0.01`.
+The sweep has 20 internal-noise levels in `[0,0.04]`, 500 TOD iterations,
+500 LCO cycles and 2,000 Monte Carlo trials per method/level (seed 1).
+LCO starts from TOD with regularization `[0]`, fallback `[1e-10,1e-8,1e-6]`.
+The process amplitude is held fixed on reruns; calibration targeted 8.5%
+terminal elbow SD and gave 8.55236% at `σ_ξ=0.01`.
 
-## Model and calibration
+## Panel G definition
 
-The state order is shoulder/elbow/wrist angles followed by their velocities.
-There are six states, nine controls and three angle observations. The model
-uses joint inertias, damping, a muscle map and Euler dynamics. Initial physical
-and internal means are `(0,-π/9,0,0,0,0)`, with zero covariances and zero target.
-The timestep is 0.01 s: **40 transitions, 41 states**, lasting exactly 0.40 s.
+For each method, using unbiased across-trial centered covariance at each time:
 
-| Parameter | Value |
-|---|---|
-| Running state cost | `diag(1000,1e-5,1000,100,1e-5,100)` |
-| Terminal state cost | `diag(1000,5000,1000,100,100,100)` |
-| Control cost | `0.005 I₉` for 40 controls; unused terminal slice zero |
-| Process amplitude `σ_ξ` | **0.01** |
-| Additive sensory amplitude | `deg2rad(0.9) = 0.015707963267948967`, retaining full precision |
-| Multiplicative motor amplitude | 0.10, implemented as `C=0.10B` |
-| Multiplicative sensory amplitude | 0.01, implemented as `D=0.01H` |
-| Internal amplitude | 20 rounded values in `[0,0.04]`; `Ω_η=σ_η² I₆` |
-| TOD / LCO | 500 iterations / 500 cycles; one K and one L update per cycle |
-| Regularization | `ρ_list=[0]`, fallback `[1e-10,1e-8,1e-6]`; both GD routes disabled |
-| Monte Carlo | 2,000 trials per method/level; seed 1 reset for each comparison |
-
-Calibration targeted 8.5% terminal elbow SD with
-tolerance 0.2 percentage points. Its first trial at `σ_ξ=0.01` gave 8.55236%,
-so no rescaling occurred. Reruns hold this calibrated process amplitude
-fixed rather than refitting it to a fresh Monte Carlo sample.
-
-E/F use the absolute singular-value threshold `s>1e-6`, summing
-natural logarithms of retained singular values, then averaging gain indices
-**2:38**. An empty retained spectrum contributes zero. Gains may be rectangular
-or rank deficient; ordinary determinants are not used. No zero-noise gain
-point is overwritten to force equality between methods.
-
-G uses unbiased within-time centered covariance, with denominator `N_trials−1`,
-and state/gain indices **1:39** (0–0.38 s):
-`V_u = sum_t Tr[L_t Cov(z_t) L_t']`. First normalize by summed internal-state
-variance:
-
-```text
-𝒱(σ_η) = V_u(σ_η) / sum_t Tr[Cov(z_t)]
-Plotted ratio = 𝒱(σ_η)/𝒱(0)
+```math
+\mathcal V_{z\to u}(\sigma_\eta)=
+\frac{\sum_{t=1}^{39}\operatorname{Tr}[L_t\operatorname{Cov}(z_t)L_t^\top]}
+     {\sum_{t=1}^{39}\operatorname{Tr}[\operatorname{Cov}(z_t)]}.
 ```
 
-TOD and LCO each use their own `𝒱(0)`; both curves begin at **1**. G plots
-the ratio against `σ_η` on a linear axis labeled `𝒱(σ_η)/𝒱(0)`,
-with a horizontal reference line at 1. There is no time averaging or `Δt` factor.
-The numerator equals summed sample control variance because `u_t=L_t z_t`;
-this provides an independent check from archived controls. Raw sums and ratios
-remain available in the statistics. This measures normalized transmission of
-internal-state variance, not the isolated contribution of internal computation noise.
+G plots `𝒱_{z→u}(σ_η)/𝒱_{z→u}(0)`, normalized separately for TOD and LCO.
+Both curves start at **1**, with a horizontal reference at 1. This is a ratio,
+not a percentage change or the isolated contribution of internal noise.
 
-## Optional full rerun
+## Rerun and replot
 
 ```bash
-julia scripts/Main/Figure2/fig2.jl --simulate --tag=new_reaching_run
-julia scripts/Main/Figure2/fig2.jl --data=data/generated/Main/Figure2/new_reaching_run
-julia scripts/Main/Figure2/fig2.jl --help
+julia scripts/Main/Figure2/fig2.jl --simulate --tag=my_run
+julia scripts/Main/Figure2/fig2.jl --data=data/generated/Main/Figure2/my_run
 ```
 
-New results go to `data/generated/Main/Figure2/TAG/`, remain Git-ignored, and
-cannot replace published data. Choose a new tag or explicitly use `--force`
-to replace generated data for a tag. Relative `--data` paths resolve from the
-repository root; `--data` and `--simulate` cannot be combined.
+Results go to `data/generated/Main/Figure2/TAG/`; existing names require
+`--force`. Reruns preserve the model and seeds but need not reproduce the saved
+Monte Carlo draws exactly.
 
-The simulator uses the core's native `(dimension,time,trial)` arrays and saves
-them in the dataset's `(dimension,trial,time)` schema. RNG resets preserve common
-random numbers between TOD/LCO. Reruns use documented seeds, but sampling order
-and RNG type can differ from those used for the saved trials; identical
-Monte Carlo realizations are not guaranteed.
-
-The saved dataset is about **479 MiB**, with all trajectories retained.
-Allow additional Julia/plotting memory and a similar disk budget for each new
-full run.
-
-See the [data guide](../../../data/README.md) for archive provenance and availability.
+`fig2.jl` is the entry point; `reaching_task.jl` defines the model,
+`fig2_simulation.jl` runs the sweep, `fig2_data.jl` handles saved results,
+`fig2_statistics.jl` defines statistics, and `fig2_plots.jl` renders PDFs.
+See the [dataset guide](../../../data/published/Main/Figure2/README.md) and `--help`.
