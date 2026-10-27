@@ -1,4 +1,4 @@
-# Figure 1b–g. Statistical definitions and plotting choices follow the submission.
+# Figure 1b–g: statistical definitions and PDF plotting.
 using DataFrames, Statistics, LinearAlgebra, JLD2, Plots, LaTeXStrings, Printf
 
 const FIG1_DIMENSIONS = "Fig1_ab_data_10000_GD.jld2"
@@ -62,7 +62,7 @@ function plot_fig1(datasets, plot_dir; panels=collect("bcdefg"))
             plots['b'] = p_cost
         end
         if 'c' in panels
-            # Original runtime-only exclusion: n=1,seed=1 for ALL methods.
+            # Runtime-only exclusion: n=1,seed=1 for ALL methods.
             # The full archive and panel-b statistics retain those three rows.
             df_time = df_min[.!((df_min.n .== 1) .& (df_min.seed .== 1)), :]
             gdf_time = agg_mean_sem(df_time, :time_sec)
@@ -75,7 +75,7 @@ function plot_fig1(datasets, plot_dir; panels=collect("bcdefg"))
                 plot!(p_time, sub.n, sub.time_sec_mean; lw=3, marker=:circle,
                     markersize, markerstrokecolor=:transparent, color=colors[method], label=latexstring("\\mathrm{" * method * "}"))
             end
-            # Runtime ribbons were commented out in the original plotting script.
+            # Runtime ribbons are not plotted.
             plots['c'] = p_time
         end
     end

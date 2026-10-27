@@ -1,4 +1,4 @@
-# Shared command-line and text-table helpers for the three rebuttal benchmarks.
+# Shared command-line and text-table helpers for appendix experiments.
 # No plotting packages, numerical solver or simulation is loaded here.
 using DataFrames, JLD2, Printf, Statistics, LinearAlgebra
 

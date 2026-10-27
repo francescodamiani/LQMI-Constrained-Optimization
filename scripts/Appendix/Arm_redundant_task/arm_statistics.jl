@@ -1,4 +1,4 @@
-# Original arm analysis definitions; traces use dimension,time,trial.
+# Arm analysis definitions; traces use dimension,time,trial.
 using MultivariateStats, StatsBase, Statistics, LinearAlgebra
 
 # Helper functions 

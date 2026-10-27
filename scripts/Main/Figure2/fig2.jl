@@ -1,5 +1,5 @@
 #!/usr/bin/env julia
-# Main Figure 2: final calibrated reaching data, eight PDFs, no default simulations.
+# Main Figure 2: calibrated reaching data, eight PDFs, no default simulations.
 include(joinpath(@__DIR__,"..","..","..","src","project.jl"))
 ENV["GKSwstype"] = get(ENV,"GKSwstype","100")
 include(joinpath(@__DIR__,"fig2_data.jl"))
@@ -38,8 +38,8 @@ end
 function fig2_main(args=ARGS)
     if "--help" in args
         println("""
-        Figure 2: final calibrated elbow-reaching task (Julia 1.8.5)
-          julia scripts/Main/Figure2/fig2.jl   eight PDFs from saved original data
+        Figure 2: calibrated elbow-reaching task (Julia 1.8.5)
+          julia scripts/Main/Figure2/fig2.jl   eight PDFs from saved data
           --simulate    recompute 20 noise levels, TOD/LCO 500 iterations, 2000 MC trials
           --tag=NAME    name the new numerical run
           --force       replace generated numerical results for this tag

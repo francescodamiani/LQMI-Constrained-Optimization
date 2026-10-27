@@ -1,9 +1,8 @@
-# Camera-ready Figure 2: calibrated elbow reaching
+# Figure 2: calibrated elbow reaching
 
-This experiment replaces the main-text stabilization example with a 20-degree
-elbow reach using the final psychophysically informed noise calibration. The
-original stabilization experiments remain under
-[`Appendix/Arm_redundant_task`](../../Appendix/Arm_redundant_task/README.md).
+Figure 2 studies a 20-degree elbow reach with psychophysically informed
+noise calibration. The supplementary
+[redundant-arm task](../../Appendix/Arm_redundant_task/README.md) studies stabilization.
 
 ## Reproduce the eight panels
 
@@ -51,26 +50,26 @@ helpers, not separate command-line programs.
 | Script | Purpose |
 |---|---|
 | [fig2.jl](fig2.jl) | Activates the root environment, selects saved-data plotting or explicit simulation, and protects published/manual output paths. |
-| [reaching_task.jl](reaching_task.jl) | Original reaching model, calibrated noise matrices and costs; calls the validated core for TOD, LCO and Monte Carlo. |
+| [reaching_task.jl](reaching_task.jl) | Reaching model, calibrated noise matrices and costs; calls the validated core for TOD, LCO and Monte Carlo. |
 | [fig2_simulation.jl](fig2_simulation.jl) | Recomputes the 20-point sweep, initializing LCO independently from the matching TOD solution, and saves complete results. |
 | [fig2_data.jl](fig2_data.jl) | Saves/loads all numerical fields using one metadata/gain file and one complete trajectory file per noise level. |
 | [fig2_statistics.jl](fig2_statistics.jl) | Computes kinematics, endpoint SD, elbow peaks, gain measures, centered control variance, variance transmission and its ratio to the zero-noise baseline. |
 | [fig2_plots.jl](fig2_plots.jl) | Renders only the eight agreed panels from numerical results; performs no optimization. |
 
-## Final model and calibration
+## Model and calibration
 
 The state order is shoulder/elbow/wrist angles followed by their velocities.
-There are six states, nine controls and three angle observations. The original
-inertias, damping, muscle map and Euler dynamics are retained. Initial physical
+There are six states, nine controls and three angle observations. The model
+uses joint inertias, damping, a muscle map and Euler dynamics. Initial physical
 and internal means are `(0,-π/9,0,0,0,0)`, with zero covariances and zero target.
 The timestep is 0.01 s: **40 transitions, 41 states**, lasting exactly 0.40 s.
 
-| Parameter | Final value |
+| Parameter | Value |
 |---|---|
 | Running state cost | `diag(1000,1e-5,1000,100,1e-5,100)` |
 | Terminal state cost | `diag(1000,5000,1000,100,100,100)` |
 | Control cost | `0.005 I₉` for 40 controls; unused terminal slice zero |
-| Process amplitude `σ_ξ` | **0.01**, recovered from both the calibrated script and saved results |
+| Process amplitude `σ_ξ` | **0.01** |
 | Additive sensory amplitude | `deg2rad(0.9) = 0.015707963267948967`, retaining full precision |
 | Multiplicative motor amplitude | 0.10, implemented as `C=0.10B` |
 | Multiplicative sensory amplitude | 0.01, implemented as `D=0.01H` |
@@ -79,21 +78,21 @@ The timestep is 0.01 s: **40 transitions, 41 states**, lasting exactly 0.40 s.
 | Regularization | `ρ_list=[0]`, fallback `[1e-10,1e-8,1e-6]`; both GD routes disabled |
 | Monte Carlo | 2,000 trials per method/level; seed 1 reset for each comparison |
 
-The original preliminary calibration targeted 8.5% terminal elbow SD with
+Calibration targeted 8.5% terminal elbow SD with
 tolerance 0.2 percentage points. Its first trial at `σ_ξ=0.01` gave 8.55236%,
-so no rescaling occurred. Reruns hold this final calibrated process amplitude
-fixed; they do not refit it to a different simulator's random realization.
+so no rescaling occurred. Reruns hold this calibrated process amplitude
+fixed rather than refitting it to a fresh Monte Carlo sample.
 
-E/F retain the source's absolute singular-value threshold `s>1e-6`, summing
+E/F use the absolute singular-value threshold `s>1e-6`, summing
 natural logarithms of retained singular values, then averaging gain indices
 **2:38**. An empty retained spectrum contributes zero. Gains may be rectangular
 or rank deficient; ordinary determinants are not used. No zero-noise gain
 point is overwritten to force equality between methods.
 
 G uses unbiased within-time centered covariance, with denominator `N_trials−1`,
-and the matching reference's state/gain indices **1:39** (0–0.38 s):
+and state/gain indices **1:39** (0–0.38 s):
 `V_u = sum_t Tr[L_t Cov(z_t) L_t']`. First normalize by summed internal-state
-variance, as in the supplied reference:
+variance:
 
 ```text
 𝒱(σ_η) = V_u(σ_η) / sum_t Tr[Cov(z_t)]
@@ -121,13 +120,13 @@ cannot replace published data. Choose a new tag or explicitly use `--force`
 to replace generated data for a tag. Relative `--data` paths resolve from the
 repository root; `--data` and `--simulate` cannot be combined.
 
-The new simulator uses the definitive core's native `(dimension,time,trial)`
-arrays, converting saved arrays to the original `(dimension,trial,time)` schema.
-Explicit RNG resets preserve common random numbers between TOD/LCO, but draw
-order and RNG type differ from the historical simulator: new Monte Carlo
-realizations are statistically reproducible, not bit-identical to the archive.
+The simulator uses the core's native `(dimension,time,trial)` arrays and saves
+them in the dataset's `(dimension,trial,time)` schema. RNG resets preserve common
+random numbers between TOD/LCO. Reruns use documented seeds, but sampling order
+and RNG type can differ from those used for the saved trials; identical
+Monte Carlo realizations are not guaranteed.
 
-The saved dataset is about **479 MiB**, with all original trajectories retained.
+The saved dataset is about **479 MiB**, with all trajectories retained.
 Allow additional Julia/plotting memory and a similar disk budget for each new
 full run.
 

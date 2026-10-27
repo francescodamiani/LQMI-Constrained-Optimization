@@ -108,7 +108,7 @@ function print_noise_experiments(results;io=stdout)
     if haskey(results,"original_ablation")
         data = results["original_ablation"]
         tables = original_ablation_tables(data)
-        println(io,"\nOriginal-noise fixed-policy ablation — ",benchmark_run_label(data),"; LCO")
+        println(io,"\nBaseline-noise fixed-policy ablation — ",benchmark_run_label(data),"; LCO")
         println(io,"Sensory removal zeros BOTH additive sensory covariance and multiplicative sensory D. No reoptimization.")
         println(io,"Component SD-reduction ranges across the complete internal-noise sweep:")
         ranges = copy(tables.ranges)

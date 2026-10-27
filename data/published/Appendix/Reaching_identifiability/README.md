@@ -1,18 +1,16 @@
-# Original reaching-identifiability numerical data
+# Reaching-identifiability numerical data
 
-These five historical legacy **JLD** archives were converted to JLD2 for the
-existing Julia 1.8.5 pinned environment. The complete original dictionaries
+These five **JLD** archives are stored as JLD2 for the pinned Julia 1.8.5
+environment. The complete dictionaries
 passed fieldwise `isequal` after conversion and reload: **229 logical fields**
 in total. No numerical values, precision, gains, trials or histories were
-removed. Serialization bytes differ because the original format requires
+removed. Serialization bytes differ because the source format requires
 JLD/HDF5, which are not dependencies of the public project.
 
-All provenance paths below are relative to the private historical
-`Reviews/results/` tree; they identify sources only. Public scripts never
-access that tree. Original scripts were matched by actual parameters and
-numerical results against the supplied identifiability reviewer response.
+The table identifies the source containers for each dataset. Public scripts
+load only the JLD2 files included in this directory.
 
-| Public file/directory | Original relative file | Fields |
+| Public file/directory | Source container | Fields |
 |---|---|---:|
 | `sensory_overestimation.jld2` | `elbow_reaching_wrong_sensory_model_sweep/wrong_sensory_model_sweep_results.jld` | 47 |
 | `matched_noise_sources.jld2` | `elbow_reaching_matched_all_noise_sources_31_point_grid/matched_all_noise_sources_extended_results.jld` | 44 |
@@ -20,7 +18,7 @@ numerical results against the supplied identifiability reviewer response.
 | `sensory_underestimation.jld2` | `elbow_reaching_wrong_sensory_underestimation_dense_raw_sweeps/wrong_sensory_underestimation_results.jld` | 53 |
 | `reference/` | `elbow_reaching_internal_noise_sweep_baseline_configuration/elbow_reaching_internal_noise_sweep_baseline_configuration.jld` | 61 |
 
-Original-file SHA-256 values, in the same order:
+Source-container SHA-256 values, in the same order:
 
 ```text
 ce8d5f90a45bdebeee33bacc3b768fed954f175e4afc7bc4796efbc8e78eb6da
@@ -35,24 +33,23 @@ combined size is **508,512,508 bytes** (about 485 MiB); the largest file is
 **25,099,879 bytes**, below 100 MiB. No LFS or external download is required.
 
 The shared reference is stored once. `reference/sweep.jld2` retains all 55
-non-trajectory fields, including the original model, seed, trial costs,
+non-trajectory fields, including the model, seed, trial costs,
 TOD/LCO gains, solver histories and diagnostics. Twenty compressed
 `reference/trajectories_sigma_eta_*.jld2` files each retain all six x/z/u
-TOD/LCO arrays for that noise level. Their axes remain the original
-**(dimension, trial, time)**. Loading all parts reconstructs the exact original
+TOD/LCO arrays for that noise level. Their axes remain the
+**(dimension, trial, time)**. Loading all parts reconstructs the complete
 61-field dictionary; no trajectory downsampling occurs. The unchanged generic
 Figure 2 storage helper is reused solely for this split format.
 
-This is an **earlier all-external-amplitudes-0.01 model**, distinct from the
-calibrated main Figure 2 archive. The source's adjective “calibrated” does not
-make its sensory/motor noise parameters identical to final Figure 2.
-The reference contains 20 internal-noise levels, 2,000 trials each, and is
-reused by A/B exactly as in their historical scripts.
+The shared reference uses **0.01 for all external-noise amplitudes**,
+20 internal-noise levels and 2,000 trials per level. A/B reuse this reference.
+The experiment-specific noise settings are documented in the
+[experiment guide](../../../../scripts/Appendix/Reaching_identifiability/README.md).
 
 A retains all 21 assumed-noise conditions, including the lower-noise branch,
 true/assumed costs, wrong-model policies, analytical/MC endpoint SDs,
 per-trial-peak means/SEMs, timing, biases and Frobenius gain metrics. Its
-matching statistics are derived by original overlap-only interpolation;
+matching statistics are derived by overlap-only interpolation;
 no invented matched policies are stored.
 
 B retains all 125 dense candidate policies, costs, SDs and completion flags,
@@ -62,20 +59,18 @@ readout/component measures, control effort and completion flags. The sensory
 grid has 32 points after inserting .01. The multiplicative grids do not
 bracket 13/20 endpoint targets each; 12/20 achieved comparisons in each exceed
 1% SD error. Saturated nearest-grid comparisons must not be described as
-successfully matched. Gain log volumes exported only in the original B CSV
-are recomputed from saved policies with the original 1e-6 threshold by `--full`.
+successfully matched. Gain log volumes are recomputed from saved policies with the 1e-6 threshold by `--full`.
 
-C is the **final dense** 10-assumed-level / 13-internal-level archive with
+C is the **dense** 10-assumed-level / 13-internal-level archive with
 true sensory amplitude .05 and **1,000** MC trials. It retains all policies,
 true and assumed costs, endpoint and peak statistics, mean profiles, norm and
-log-volume measures, threshold and completion flags. The earlier coarse
-underestimation archive is a different analysis and is excluded.
+log-volume measures, threshold and completion flags.
 
 The A/B/C summary archives did not save wrong/matched/C per-trial trajectories
 or condition-level optimization histories; these cannot be recovered from
 rounded text or CSV exports. All trial-level trajectories and histories that
 were available in the shared internal-reference archive are retained. Missing
-raw data are not fabricated. Original CSV/text exports duplicate stored or
+raw data are not fabricated. CSV/text exports duplicate stored or
 derivable summaries and are not copied; no plots are included.
 
 ```bash
@@ -89,4 +84,4 @@ large trajectories are needed only for explicit A/B reruns or trial-level
 validation. Generated runs go exclusively under
 `data/generated/Appendix/Reaching_identifiability/TAG/` and never overwrite
 these archives. Full runs record reference metadata without duplicating its
-original trajectories. Reduced runs generate their own marked small reference.
+trajectories. Reduced runs generate their own marked small reference.

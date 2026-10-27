@@ -1,5 +1,5 @@
-# Migrated from run_elbow_reaching_matched_additive_noise_study.jl; numerical loops and statistics retained.
-# Only --simulate loads this module. Full settings are the historical settings.
+# Independently optimized external-noise candidates matched to internal-noise endpoint variability.
+# Loaded only for explicit simulation reruns.
 module MatchedNoiseSources
 using LinearAlgebra, Statistics, Random, Printf, MultivariateStats, JLD2
 using ..IdentifiabilitySimulation: Todorov_optimization_multidimensional_case,

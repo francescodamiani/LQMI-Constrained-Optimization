@@ -26,17 +26,17 @@ end
 function noise_ablation_main(args=ARGS)
     if "--help" in args
         println("""
-        Historical redundant-arm stabilization: behavioral variability and fixed-policy noise ablations.
+        Redundant-arm stabilization: behavioral variability and fixed-policy noise ablations.
           julia scripts/Appendix/Arm_redundant_task/Noise_ablation/noise_ablation.jl
-          Default: tables from the included original numerical archives; no simulation or plots.
+          Default: tables from the included numerical archives; no simulation or plots.
           --experiment=behavioral,original_ablation,high_noise   choose experiments (default: all)
           --simulate      explicitly rerun selected analyses and save numerical results
-          --reoptimize    also recompute original-regime full-model policies; never ablated policies
+          --reoptimize    also recompute baseline-regime full-model policies; never ablated policies
           --validate      with --simulate, use a reduced, clearly marked numerical configuration
           --tag=NAME      generated-run directory name
           --data=DIR      print an existing numerical run without recomputation
           --force         permit replacing numerical files inside an existing generated tag
-        Original analyses reuse archived full-model gains unless --reoptimize is requested.
+        Baseline analyses reuse archived full-model gains unless --reoptimize is requested.
         High-noise runs always solve TOD/LCO independently at each full-model noise level.
         Data: data/published/Appendix/Arm_redundant_task/Noise_ablation/.
         New runs: data/generated/Appendix/Arm_redundant_task/Noise_ablation/TAG/.

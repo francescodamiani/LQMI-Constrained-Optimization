@@ -1,4 +1,4 @@
-# Random square LQMI tasks. Adapted from the submission dimension benchmark.
+# Random square LQMI tasks for the Figure 1 dimension benchmark.
 using LinearAlgebra, Random
 
 function generate_stable_matrix(n; ρ_max=0.9, rng=Random.default_rng())

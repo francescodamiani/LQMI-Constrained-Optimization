@@ -8,13 +8,13 @@ function benchmark_main(args=ARGS)
         println("""
         Task/direction seeds 4321/4322; m=p=k=5,T=10; 202 initializations, at most 500 complete LCO passes.
           julia scripts/Appendix/RandomTasks/Initialization_sensitivity/initialization_sensitivity.jl
-          Default: print Markdown tables from the complete original JLD2 archive.
-          --simulate   rerun the original publication settings (can be expensive)
+          Default: print Markdown tables from the complete saved JLD2 archive.
+          --simulate   rerun the publication settings (can be expensive)
           --validate   with --simulate, run a small explicitly marked numerical test
           --tag=NAME   save new numerical results under this generated-run tag
           --data=DIR   print tables from an existing compatible run, without recomputation
           --force      allow an existing generated run directory (benchmarks resume saved rows)
-        No figures or duplicate table files are generated. Historical data are never overwritten.
+        No figures or duplicate table files are generated. Published data are never overwritten.
         """)
         return
     end

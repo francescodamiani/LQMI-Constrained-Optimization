@@ -13,7 +13,7 @@ Run these commands from the repository root with **Julia 1.8.5**:
 julia scripts/Main/Figure1/fig1.jl
 ```
 
-The second command runs **no simulations or optimizations**. It writes
+The command runs **no simulations or optimizations**. It writes
 `fig1b.pdf` through `fig1g.pdf` and the combined `fig1_b-g.pdf` (b,c,d / e,f,g)
 under `figures/generated/Main/Figure1/`. Only PDFs are generated; repeated runs
 replace these derived files. Nothing is written to `figures/published/`.
@@ -45,8 +45,8 @@ Dataset names below are relative to `data/published/Main/Figure1/`.
 | f | Time-averaged Frobenius distance of filter gains K to GD | Same noise-sweep file |
 | g | Time-averaged Frobenius distance of control gains L to GD | Same noise-sweep file |
 
-Panel c retains the original exclusion of the dimension-1, seed-1 timing from
-all methods' plotted means; the saved data are complete. See the
+Panel c excludes the dimension-1, seed-1 timing from all methods' plotted
+means; the saved data are complete. See the
 [data README](../../../data/README.md) for schemas, numerical settings and seeds.
 
 ## Optional experiment reruns

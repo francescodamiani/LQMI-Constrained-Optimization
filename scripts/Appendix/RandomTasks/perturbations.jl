@@ -1,5 +1,5 @@
 #!/usr/bin/env julia
-# Appendix Figure 3: saved data by default; simulation is explicitly opt-in.
+# LCO local perturbations: saved data by default; simulation is explicitly opt-in.
 include(joinpath(@__DIR__, "..", "..", "..", "src", "project.jl"))
 ENV["GKSwstype"] = get(ENV, "GKSwstype", "100")
 include(joinpath(@__DIR__, "perturbation_helpers.jl"))
@@ -31,10 +31,10 @@ end
 function perturbation_main(args=ARGS)
     if "--help" in args
         println("""
-        Appendix Figure 3: local perturbations of LCO (Julia 1.8.5)
+        Local perturbations of LCO (Julia 1.8.5)
           julia scripts/Appendix/RandomTasks/perturbations.jl
             Generate all three PDF panels from the included numerical dataset.
-          --simulate   explicitly recompute the full original scan (2.4 million costs)
+          --simulate   explicitly recompute the full scan (2.4 million costs)
           --tag=NAME   name a newly simulated numerical run
           --force      replace generated numerical data for that tag
           --data=DIR   plot a compatible saved run without simulations
@@ -55,7 +55,7 @@ function perturbation_main(args=ARGS)
     end
     prepare_generated_directory(options.figure_dir, "figures"; force=true)
     plot_perturbations(results, options.figure_dir)
-    println("Saved Figure 3a–c PDFs to ", options.figure_dir)
+    println("Saved LCO perturbation PDFs to ", options.figure_dir)
 end
 
 abspath(PROGRAM_FILE) == (@__FILE__) && perturbation_main()

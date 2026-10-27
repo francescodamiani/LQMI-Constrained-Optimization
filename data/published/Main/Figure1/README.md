@@ -19,24 +19,20 @@ SHA-256 checksums:
 ca0fc697d918b8eb208f89cc00c6f02a7bfc25f28c989ef7140d777edb800e20  Fig_internal_noise_sweep_full_solutions_IC_at_LCO_solutions_10000_GD.jld2
 ```
 
-The dimension and noise-sweep files were copied byte for byte from the original
-NeurIPS supplementary submission, with no removed fields or reduced precision.
-The convergence file is a byte-identical copy of the validated full-settings
-run regenerated with the validated core. All three datasets share this directory and
-the same plotting workflow. No script accesses the private historical source.
-New simulations write exclusively to `generated/Main/Figure1/TAG/` (Git-ignored) and
-never replace these saved reference files. Camera-ready provenance is not assumed.
+These complete datasets retain full numerical precision. The convergence
+histories were computed with the validated core at full experiment settings.
+All three datasets use the same plotting workflow. Simulation reruns write only
+to `data/generated/Main/Figure1/TAG/` (Git-ignored) and never replace these files.
 
 ## Convergence: d
 
-Producer: `scripts/Main/Figure1/fig1_convergence.jl`, adapted from
-`Monotonic_Convergence_LCO.jl`. The saved file contains `cost_trajectories`,
+Producer: `scripts/Main/Figure1/fig1_convergence.jl`. The saved file contains `cost_trajectories`,
 `df_summary`, `problem_data`, and `settings`.
 
 `cost_trajectories["sigma_eta_list"]` stores [0,0.05,0.1,0.2,0.3,0.5,0.7];
 `cost_trajectories["traj"]` stores all seven Float64 histories, each with
 **1,001 entries**, including the initial objective and every control/filter
-update. The plot shows the original x range 0.8–10; the dataset retains the
+update. The plot shows the x range 0.8–10; the dataset retains the
 entire histories without downsampling. `df_summary` stores `sigma_eta`,
 `n_iter_recorded`, `cost_init`, `cost_final`, `solve_time_sec`, `best_method`,
 and `best_rho`. `cost_final` means the last recorded cost, which need not be
@@ -46,38 +42,31 @@ The fixed task uses n=5, T=10 and problem seed 51235, with 500 TOD iterations
 and 500 LCO cycles, matching the settings below. The initial and final costs
 agree with saved TOD/LCO objectives within 1.5e−12. Settings record the master
 seed, iteration counts and `smoke=false`. Problem matrices and initial moments
-match the fixed noise-sweep problem. The original submission script saved only
-a plot, so these histories were regenerated using the validated core; their
-provenance is recorded here without a separate directory structure.
+match the fixed noise-sweep problem.
 
 ## Dimension benchmark: b,c
 
-Original producer: `RandomTask_sweep_dimensions.jl`; original renderer:
-`RandomTask_sweep_dimensions_Plots_ab.jl`. The renderer's "a" is manuscript c
-(runtime), and its "b" is manuscript b (cost). Public producer:
-`scripts/Main/Figure1/fig1_dimensions.jl`; renderer: `scripts/Main/Figure1/fig1_plots.jl`.
+Producer: `scripts/Main/Figure1/fig1_dimensions.jl`;
+renderer: `scripts/Main/Figure1/fig1_plots.jl`.
 
 `df_min` has columns `n::Int`, `seed::Int`, `method::String`,
 `time_sec::Float64`, `cost::Float64`. All 10 realizations per method and
 dimension are retained. TOD/LCO: n = [1,2,5,10,15,20,40,60,80,100]; GD:
 n = [1,2,5,10]. Horizon T=10; internal noise amplitude 0.5. Costs are analytical
 trace-formula costs. Panel b uses the mean and sample-SD/√10 SEM over all rows.
-Panel c preserves the original exclusion of n=1,seed=1 **for all three methods**
-(9 observations there, 10 elsewhere). Runtime SEM is computed but was not drawn
-in the source, so no runtime ribbons are added. This display exclusion does not
+Panel c excludes the timing for n=1,seed=1 **for all three methods**
+(9 observations there, 10 elsewhere). Runtime SEM is computed but not plotted. This display exclusion does not
 remove any archived row. LCO/GD times exclude the preceding TOD initialization;
-original JIT overhead can be included in first-call timings.
+JIT overhead can be included in first-call timings.
 
-This historical file contains no gains, iteration histories, raw Monte Carlo
-trials, or intermediate optimizer states; the full original file is preserved.
+This dataset contains no gains, iteration histories, raw Monte Carlo
+trials, or intermediate optimizer states.
 New simulations additionally retain gain sequences, LCO histories/selection
 diagnostics, GD iteration/convergence diagnostics, and run settings.
 
 ## Fixed noise sweep: e,f,g
 
-Original producer: `RandomTask_sweep_internal_noise.jl`; original renderer:
-`RandomTask_sweep_internal_noise_Plots.jl`. Public producer:
-`scripts/Main/Figure1/fig1_noise.jl`. The archived sweep has n=5, seed index 1, T=10,
+Producer: `scripts/Main/Figure1/fig1_noise.jl`. The archived sweep has n=5, seed index 1, T=10,
 σ_eta = [0,0.05,0.1,0.2,0.3,0.5,0.7], and 1,000 MC trials per method/noise.
 
 Top-level keys: `df_sweep`, `solutions_all`, `problem_data`, `sigma_eta_list`,
@@ -122,17 +111,17 @@ this sign. There is no additional sign flip.
 
 The master seed is 1234; each problem uses
 `MersenneTwister(1234 + 10000*n + seed)` with seed indices 1:10 for b,c and
-1 for d–g. The source MC evaluation seed is
+1 for d–g. The saved MC evaluation seed is
 `1234 + 400000 + round(Int,1e6*σ_eta)`, reset for each method at a noise level.
 New simulations use fresh MersenneTwisters with those documented seeds.
-The new simulator samples the same mathematical model with a different draw
-order: exact original trial realizations are neither required nor claimed.
+Simulation reruns sample the same mathematical model, but their draw order
+can differ from that of the saved trials.
 Arrays use `(dimension,time,trial)`; reported empirical cost and sample SEM
 come directly from the core simulator. Dense copies of additive covariances
 are passed to MC to support singular zero-noise covariance on Julia 1.8.5;
 all covariance values are unchanged.
 
-TOD: 500 iterations. LCO starts from TOD, calls the unchanged core FullProcedure
+TOD: 500 iterations. LCO starts from TOD, calls the core FullProcedure
 with ρ_list=[0], ρ_list_large=[1e−10,1e−8,1e−6], 500 cycles, iters_K=iters_L=1,
 no analytical GD refinement/from-IC (both flags false, iteration counts 0).
 Retained inactive GD settings: Adam, learning rate 1e−3, maxiter 50, tol 1e−6,
@@ -142,9 +131,6 @@ Numerical GD uses Optim.GradientDescent(), finite-difference gradients and
 Optim defaults, iterations=10000, store_trace=show_trace=false. GD starts from
 TOD in b,c and from LCO in e–g. Timing covers optimization only.
 
-The supplied sweep source was edited after its seven-level archive was saved:
-it selects only σ_eta=0.2, leaves `iterations_GD` unfinished and names an
-`ONLY_ONE_NOISE` output. Publication settings above follow the archived grid,
-the `_10000_GD` filename, the benchmark source and manuscript Table 1. The
-archive does not itself store the optimizer iteration limit, so that limit's
-provenance is documented rather than asserted as recovered metadata.
+The noise-sweep archive does not store the GD iteration limit as metadata.
+The rerun uses 10,000 iterations, consistent with the dataset filename and
+benchmark settings.

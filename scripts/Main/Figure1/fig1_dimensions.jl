@@ -1,4 +1,4 @@
-# Figure 1b,c: original dimension benchmark, with repository paths and smoke settings.
+# Figure 1b,c: dimension benchmark with optional reduced validation settings.
 using Optim, DataFrames, JLD2, Printf
 
 function simulate_dimensions(data_dir; smoke=false)

@@ -1,5 +1,5 @@
-# Migrated from run_elbow_reaching_wrong_sensory_underestimation_test.jl; numerical loops and statistics retained.
-# Only --simulate loads this module. Full settings are the historical settings.
+# Sensory-underestimation and internal-noise raw sweeps.
+# Loaded only for explicit simulation reruns.
 module Underestimation
 using LinearAlgebra, Statistics, Random, Printf, MultivariateStats, JLD2
 using ..IdentifiabilitySimulation: Todorov_optimization_multidimensional_case,
@@ -188,7 +188,7 @@ end
 sigma_omega_true = 0.05
 Ω_ω_true = Diagonal(fill(sigma_omega_true^2, p))
 
-#Denser grids for the final raw-sweep comparison.
+#Grids for the raw-sweep comparison.
 sigma_omega_hat_list =
     collect(range(0.05, stop=0.016, length=validation_only ? 3 : 10))
 
@@ -222,7 +222,7 @@ tol_GD = 1e-6
 β2_Adam = 0.999
 ϵ_Adam = 1e-8
 
-#Use 1000 trials for the fast test. Change this to 2000 for the final run.
+#Use 1000 Monte Carlo trials, matching the published dataset.
 N_trials_MC = validation_only ? 64 : 1000
 random_seed = reference_results["random_seed"]
 pseudodeterminant_tolerance = 1e-4

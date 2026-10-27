@@ -1,4 +1,4 @@
-# Historical 3-DOF stabilization task; not the calibrated camera-ready reaching model.
+# Three-joint redundant-arm stabilization model.
 using LinearAlgebra, Random, Statistics, Distributions
 
 function arm_problem(; T=300)

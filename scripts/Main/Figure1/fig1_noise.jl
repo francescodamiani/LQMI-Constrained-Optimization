@@ -1,4 +1,4 @@
-# Figure 1e–g: adapted from RandomTask_sweep_internal_noise.jl.
+# Figure 1e–g: fixed-task internal-noise sweep.
 using Optim, LinearAlgebra, Random, Statistics, Printf, DataFrames, JLD2
 
 function simulate_internal_noise(data_dir; smoke=false)
@@ -17,8 +17,7 @@ T = smoke ? 4 : 10
 σ_ξ, σ_ω, σ_ρ, σ_ϵ = 0.2, 0.2, 0.2, 0.2
 
 # Sweep over σ_η
-# The saved seven-level archive is the publication run; the supplied source
-# had subsequently been edited to a single-noise exploratory run.
+# Full settings use the seven internal-noise levels in the published dataset.
 sigma_eta_list = smoke ? [0.0, 0.2, 0.7] : [0.0, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7]
 
 # Monte Carlo settings
@@ -50,8 +49,7 @@ N_iter_GD_from_IC = 0
 
 # GD baseline
 algorithm_GD  = Optim.GradientDescent()
-# 10,000 iterations identifies the archived publication run (filename and Table 1).
-# The supplied exploratory source left this assignment unfinished.
+# GD uses 10,000 iterations at full publication settings.
 iterations_GD = smoke ? 3 : 10000
 
 options_GD = Optim.Options(
@@ -152,7 +150,7 @@ problem_data["σ_ρ"] = σ_ρ
 problem_data["σ_ϵ"] = σ_ϵ
 problem_data["random_seed_master"] = random_seed_master
 
-# Full new-run diagnostics (historical files remain untouched).
+# Full rerun diagnostics (published datasets remain untouched).
 cost_per_trial = Dict(method => zeros(N_trials_MC, Nσ) for method in ["TOD", "LCO", "GD"])
 lco_diagnostics = Dict{String,Any}()
 gd_diagnostics = Dict{String,Any}()

@@ -1,11 +1,10 @@
-# Historical redundant-arm data
+# Redundant-arm data
 
-The complete original k=3 arm-figure trajectory caches are unavailable; no
-replacement figure datasets are generated or bundled. Separate rebuttal
-experiments have complete numerical archives:
+Full trajectory datasets for the k=3 arm figures are not bundled.
+The following analyses have complete numerical archives:
 
 - [Under_observed/](Under_observed/README.md): k=1 TOD/LCO benchmark.
-- [Noise_ablation/](Noise_ablation/README.md): original k=3 full-model gains,
+- [Noise_ablation/](Noise_ablation/README.md): k=3 full-model gains,
   behavioral variance summaries, fixed-policy ablations and alternative noise regime.
 
 Their entry points print numerical tables from saved data without figures.

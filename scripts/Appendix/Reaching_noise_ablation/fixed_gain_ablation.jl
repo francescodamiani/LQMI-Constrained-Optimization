@@ -1,4 +1,4 @@
-# Migrated from analyze_elbow_reaching_calibrated_fixed_gain_noise_ablation.jl.
+# Calibrated reaching: analytical fixed-gain noise ablation.
 # Reuse the actual public calibrated model, original policies and existing moments.
 using LinearAlgebra, Statistics, SHA
 include(joinpath(@__DIR__,"..","..","Main","Figure2","reaching_task.jl"))
@@ -50,7 +50,7 @@ function recompute_reaching_ablation(output_dir)
     sigma_eta_list=saved_results["sigma_eta_list"]
     target_sigma_eta=[0.0,0.01,0.02,0.03,0.04]
     selected_indices=[argmin(abs.(sigma_eta_list.-value)) for value in target_sigma_eta]
-    sigma_eta_list[selected_indices]==REACHING_ABLATION_LEVELS || error("Selected Figure 2 levels differ from the historical analysis")
+    sigma_eta_list[selected_indices]==REACHING_ABLATION_LEVELS || error("Selected Figure 2 levels differ from the saved ablation data")
     ablation_names=REACHING_ABLATION_CONDITIONS
     results=DataFrame(sigma_eta=Float64[],condition=String[],terminal_elbow_SD_pct=Float64[],
         mean_angle_SD=Float64[],mean_velocity_SD=Float64[],terminal_elbow_SD_reduction_pct=Float64[],

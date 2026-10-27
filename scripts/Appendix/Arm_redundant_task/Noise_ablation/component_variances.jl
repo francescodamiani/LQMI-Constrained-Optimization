@@ -1,4 +1,4 @@
-# Exact deterministic moments from the original fixed-policy ablation analysis.
+# Exact deterministic moments for fixed-policy noise ablation.
 # This is an analysis helper; stochastic trajectories use the validated core simulator.
 using LinearAlgebra, Statistics
 
