@@ -16,7 +16,12 @@ julia scripts/Appendix/Reaching_noise_ablation/reaching_noise_ablation.jl --data
 The default prints tables from `data/published/Appendix/Reaching_noise_ablation/`.
 `--simulate` recomputes all 35 cases by analytical moment propagation only:
 no optimization, Monte Carlo or figures. It reuses `data/published/Main/Figure2/sweep.jld2`
-and saves one result file to `data/generated/Appendix/Reaching_noise_ablation/TAG/`.
+and saves `calibrated_reaching_ablation.jld2` to
+`data/generated/Appendix/Reaching_noise_ablation/TAG/`.
+
+The published file `calibrated_fixed_gain_noise_ablation_subset.csv` contains
+all 35 rows. Its eight columns are the internal amplitude, condition, three
+SD metrics and their three percentage reductions, defined below.
 
 ## Settings and interpretation
 
@@ -40,6 +45,5 @@ Analytical full-model endpoint SD is 8.63464–10.54364%; Figure 2 uses Monte Ca
 sample SD instead, explaining its small numerical difference.
 
 `reaching_noise_ablation.jl` is the entry point; `ablation_tables.jl` reads and
-prints results, and `fixed_gain_ablation.jl` recomputes them. See the
-[dataset guide](../../../data/published/Appendix/Reaching_noise_ablation/README.md)
-and `--help` for options.
+prints results, and `fixed_gain_ablation.jl` recomputes them. Use `--help`
+for options.

@@ -14,6 +14,13 @@ julia scripts/Main/Figure2/fig2.jl --panels=G
 The default loads `data/published/Main/Figure2/` without simulation and writes
 eight PDFs to `figures/generated/Main/Figure2/`. The second command updates only G.
 
+The saved dataset includes model/settings, gains, costs, histories and full
+trajectories. `sweep.jld2` stores metadata and gains; twenty
+`trajectories_sigma_eta_*.jld2` files store x/z/u trials by noise level.
+`load_fig2` in `fig2_data.jl` loads all parts. State/control arrays have shapes
+`(6,2000,41)` / `(9,2000,40)`, with axes `(dimension,trial,time)`; K/L tensors
+have shapes `(6,3,40)` / `(9,6,40)`.
+
 | Panel | Quantity | PDF |
 |---|---|---|
 | A | LCO elbow angle, mean ± SD | `A_elbow_angle.pdf` |
@@ -41,7 +48,8 @@ The sweep has 20 internal-noise levels in `[0,0.04]`, 500 TOD iterations,
 500 LCO cycles and 2,000 Monte Carlo trials per method/level (seed 1).
 LCO starts from TOD with regularization `[0]`, fallback `[1e-10,1e-8,1e-6]`.
 The process amplitude is held fixed on reruns; calibration targeted 8.5%
-terminal elbow SD and gave 8.55236% at `σ_ξ=0.01`.
+terminal elbow SD and gave 8.55236% at `σ_ξ=0.01`. Saved convergence flags
+report finite-cost/nonincrease checks, not a proof of convergence.
 
 ## Panel G definition
 
@@ -71,4 +79,4 @@ Monte Carlo draws exactly.
 `fig2.jl` is the entry point; `reaching_task.jl` defines the model,
 `fig2_simulation.jl` runs the sweep, `fig2_data.jl` handles saved results,
 `fig2_statistics.jl` defines statistics, and `fig2_plots.jl` renders PDFs.
-See the [dataset guide](../../../data/published/Main/Figure2/README.md) and `--help`.
+Use `--help` for all options.

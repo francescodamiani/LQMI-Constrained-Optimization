@@ -16,6 +16,9 @@ julia scripts/Appendix/RandomTasks/Initialization_sensitivity/initialization_sen
 The default prints tables from
 `data/published/Appendix/RandomTasks/Initialization_sensitivity/` without optimization
 or figures. Reruns save to `data/generated/Appendix/RandomTasks/Initialization_sensitivity/TAG/`.
+The archive `lco_initialization_study_results.jld2` contains all 202
+501-value cost histories, final L/K gains, TOD gains, every direction, complete
+task matrices, initial conditions, settings and the result table.
 Use `--help` for options, including reduced numerical checks with `--validate`.
 
 ## Settings and results
@@ -28,12 +31,12 @@ Random starts are measured from the origin, not added to TOD.
 
 Each run uses 500 complete L/K passes. Regularization groups are `[0]`, then
 `[1e-10,1e-8,1e-6]` if needed; all saved runs selected zero. The `1e-10`
-relative-change tolerance is reported as a diagnostic, not an early-stop rule.
+relative-change tolerance is a diagnostic, not an early-stop rule; no saved
+run reaches it.
 All 202 costs are finite and below TOD. Of the random starts, 183/200 finish
 within 0.1% of TOD-initialized LCO and 199/200 within 0.2%; the largest gap is
 0.2193836338%. Reruns can return different best checkpoints, so exact saved
 final values and convergence flags are not guaranteed.
 
 `initialization_sensitivity.jl` prints results;
-`run_lco_initialization_study.jl` runs the study. See the
-[dataset guide](../../../../data/published/Appendix/RandomTasks/Initialization_sensitivity/README.md).
+`run_lco_initialization_study.jl` runs the study.
