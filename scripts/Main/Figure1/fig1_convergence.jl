@@ -1,4 +1,4 @@
-# Figure 1d: adapted from Monotonic_Convergence_LCO.jl.
+# Figure 1d: LCO cost histories after alternating gain updates.
 using Optim, LinearAlgebra, Random, Statistics, Printf, DataFrames, JLD2
 
 function simulate_convergence(data_dir; smoke=false)

@@ -1,4 +1,4 @@
-# Original Figure 2b–h and appendix Figures 4–5; provisional original output names.
+# Redundant-arm internal-noise sweep and PCA plots.
 using Plots, LaTeXStrings, MultivariateStats, StatsBase, Statistics, LinearAlgebra
 
 function plot_internal_noise_sweep(results, plot_dir)
@@ -70,7 +70,7 @@ plt_L = plot(
     grid=false
 )
 
-# Original display convention; raw gains and numerical data remain untouched.
+# Display convention; raw gains and numerical data remain untouched.
 gain_L_LCO[1] = gain_L_TOD[1]
 
 plot!(plt_L,

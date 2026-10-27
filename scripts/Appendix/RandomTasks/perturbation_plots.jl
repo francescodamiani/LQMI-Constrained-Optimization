@@ -1,4 +1,4 @@
-# Figure 3a–c: original relative-perturbation violins and median overlays.
+# LCO relative-perturbation violins and median overlays.
 using StatsPlots, LaTeXStrings, JLD2, DataFrames, CodecZlib
 
 const PERTURBATION_DATA_FILENAME = "LCO_local_perturbation_scan_sigma_eta_0p200.jld2"
@@ -32,7 +32,7 @@ function plot_perturbations(results, folder_out)
     df_summary = results["df_summary"]
     epsilon_list = results["epsilon_list"]
     all(isfinite, df_scan.delta_cost) && all(>(0.0), df_scan.delta_cost) ||
-        error("Original log-scale violins require finite positive delta_cost values; inspect the numerical results before plotting.")
+        error("Log-scale violins require finite positive delta_cost values; inspect the numerical results before plotting.")
 # PLOT DEFAULTS --------------------------------------------------------------------------------------------------------
 default(
     size = (550, 550),

@@ -1,4 +1,4 @@
-# Historical internal-noise sweep: TOD vs LCO for the redundant stabilization task.
+# Internal-noise sweep: TOD vs LCO for the redundant stabilization task.
 using MultivariateStats, StatsBase, Statistics, LinearAlgebra, Random, Printf
 
 function simulate_internal_noise_sweep(; problem_data=arm_problem(),
@@ -54,7 +54,7 @@ function simulate_internal_noise_sweep(; problem_data=arm_problem(),
         analytical_cost_LCO[idx] = arm_analytical_cost(p,solution.L_Full_Solver,solution.K_Full_Solver,σ_η_internal_noise)
         analytical_cost_TOD[idx] = arm_analytical_cost(p,solution.L_TOD,solution.K_TOD,σ_η_internal_noise)
 
-        # Preserve the original pooled-control PCA and its first three fractions.
+        # Pooled-control PCA and its first three fractions.
         for (u_vec, pc_dirs, pc_var) in [(mc.u_traces,pc_dirs_list,pc_var_list),
                                         (mc_TOD.u_traces,pc_dirs_list_TOD,pc_var_list_TOD)]
             Umat = reshape(u_vec,p.dimension_of_control,:)

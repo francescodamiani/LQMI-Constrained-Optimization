@@ -31,12 +31,12 @@ function reaching_identifiability_main(args=ARGS)
           julia scripts/Appendix/Reaching_identifiability/reaching_identifiability.jl
           --full                    every A/B condition (C always includes both complete sweeps)
           --experiment=overestimation,noise_sources,underestimation   select analyses
-          --simulate --tag=NAME     explicitly rerun selected experiments with original settings
+          --simulate --tag=NAME     explicitly rerun selected experiments with publication settings
           --validate                with --simulate: 8 samples, 64 trials, 3 iterations, reduced grids
           --data=DIR                tables from an existing saved run
           --force                   replace results within an existing generated tag
         Published data are never overwritten. Generated data: data/generated/Appendix/Reaching_identifiability/NAME/.
-        A/B reuse their original archived internal-noise reference, including its zero-noise policy.
+        A/B reuse the saved internal-noise reference, including its zero-noise policy.
         """)
         return
     end

@@ -1,4 +1,4 @@
-# Original appendix Figure 6; preserve the source's mean ± sample SEM and axes.
+# Non-Gaussian noise comparison: mean cost ± sample SEM.
 using Plots, LaTeXStrings
 
 function plot_nongaussian_arm(results,plot_dir)

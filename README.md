@@ -52,8 +52,8 @@ The [data guide](data/README.md) links dataset schemas and provenance.
 |---|---|---|
 | [Figure 1](scripts/Main/Figure1/README.md) | `scripts/Main/Figure1/fig1.jl` | Six panels b–g and their composite from saved data |
 | [Figure 2](scripts/Main/Figure2/README.md) | `scripts/Main/Figure2/fig2.jl` | Eight calibrated reaching panels from saved data |
-| [Random-task perturbations](scripts/Appendix/RandomTasks/README.md) | `scripts/Appendix/RandomTasks/perturbations.jl` | Three Appendix Figure 3 panels from saved data |
-| [Historical arm figures](scripts/Appendix/Arm_redundant_task/README.md) | `scripts/Appendix/Arm_redundant_task/arm_redundant_task.jl` | **Runs full simulations:** original figure caches were unavailable |
+| [Random-task perturbations](scripts/Appendix/RandomTasks/README.md) | `scripts/Appendix/RandomTasks/perturbations.jl` | Three gain-perturbation panels from saved data |
+| [Redundant-arm task](scripts/Appendix/Arm_redundant_task/README.md) | `scripts/Appendix/Arm_redundant_task/arm_redundant_task.jl` | **Runs full simulations:** figure datasets are not bundled |
 | [Under-observed random tasks](scripts/Appendix/RandomTasks/Under_observed/README.md) | `scripts/Appendix/RandomTasks/Under_observed/under_observed.jl` | Saved numerical tables |
 | [Under-observed arm](scripts/Appendix/Arm_redundant_task/Under_observed/README.md) | `scripts/Appendix/Arm_redundant_task/Under_observed/under_observed.jl` | Saved numerical tables |
 | [Initialization sensitivity](scripts/Appendix/RandomTasks/Initialization_sensitivity/README.md) | `scripts/Appendix/RandomTasks/Initialization_sensitivity/initialization_sensitivity.jl` | Saved numerical tables |

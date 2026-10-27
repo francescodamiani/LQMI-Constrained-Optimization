@@ -1,4 +1,4 @@
-# Numerical matching from the original mismatch plotting script; no plots.
+# Reaching-identifiability matching statistics and numerical tables; no plots.
 function interpolate_internal_result(
     target_SD, internal_SD, internal_values
 )

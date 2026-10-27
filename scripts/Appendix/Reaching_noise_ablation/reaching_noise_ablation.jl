@@ -18,7 +18,7 @@ function reaching_noise_ablation_main(args=ARGS)
           --simulate --tag=NAME   recompute analytical variances with existing Figure 2 LCO gains
           --data=DIR             print a saved generated run
           --force                replace numerical results within an existing generated tag
-        Default: original numerical tables, no computation or output files.
+        Default: saved numerical tables, no computation or output files.
         Published results: data/published/Appendix/Reaching_noise_ablation/.
         New results: data/generated/Appendix/Reaching_noise_ablation/NAME/.
         No gains are reoptimized; no Monte Carlo or figures are generated.

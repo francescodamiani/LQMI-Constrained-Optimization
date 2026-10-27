@@ -1,4 +1,4 @@
-# Adapted from the original Test_LCO_perurbations_for_local_minimum.jl.
+# LCO local-optimality experiment: relative perturbations of control and estimation gains.
 # The loop order, relative perturbations, RNG streams and solver settings are unchanged.
 using LinearAlgebra, Random, Printf, Statistics, DataFrames, JLD2
 
@@ -239,7 +239,7 @@ show(df_summary, allrows=true, allcols=true)
 println("\n")
 
 # SAVE -----------------------------------------------------------------------------------------------------------------
-# Retain every original field; new runs also record settings and the reference gains.
+# Simulation results include settings and the reference gains.
 validation_only = !(n_fixed == 5 && T == 10 && N_iter_Todorov == 500 &&
     N_iter_tot == 500 && N_dir_L == 100000 && N_dir_K == 100000 &&
     N_dir_joint == 100000 && epsilon_list == [1e-4, 1e-3, 1e-2, 1e-1])

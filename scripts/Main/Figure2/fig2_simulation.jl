@@ -1,4 +1,4 @@
-# Optional rerun of the final calibrated sweep; no plotting in this helper.
+# Optional rerun of the calibrated sweep; no plotting in this helper.
 using LinearAlgebra, Statistics, Random
 
 function simulate_fig2(data_dir; problem_data=reaching_problem(),
@@ -15,7 +15,7 @@ results["random_seed"] = random_seed
 results["N_iter_Todorov"] = N_iter_Todorov
 results["N_iter_tot_LCO"] = N_iter_tot
 results["pseudodeterminant_tolerance"] = 1e-6
-# Freeze the recovered final amplitude rather than refitting to new random draws.
+# Keep the calibrated process-noise amplitude fixed across reruns.
 results["calibrated_sigma_xi"] = p.σ_ξ
 results["process_noise_origin"] = "fixed published calibration"
 results["validation_only"] = !(p.T == 41 && p.T_move == 0.40 && p.Δt == 0.01 &&

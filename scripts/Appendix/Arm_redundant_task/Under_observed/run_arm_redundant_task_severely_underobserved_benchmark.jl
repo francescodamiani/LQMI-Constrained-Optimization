@@ -19,7 +19,7 @@ function simulate_underobserved_arm(output_directory;validation_only=false)
       x_state_mean_0) = p
 # OPTIMIZATION PARAMETERS ----------------------------------------------------------------------------------------------
 
-# These are unchanged from the original redundant-arm internal-noise sweep.
+# These parameters match the redundant-arm internal-noise sweep.
 N_iter_Todorov = validation_only ? 3 : 500
 
 ρ_list = [0.0]
@@ -42,7 +42,7 @@ N_iter_GD_refine = 0
 N_iter_GD_from_IC = 0
 verbose = false
 
-# These tolerances are diagnostics only; the original LCO run uses 500 fixed passes.
+# These tolerances are diagnostics only; the LCO run uses 500 fixed passes.
 lco_residual_tolerance = 1e-6
 lco_monotonicity_relative_tolerance = 1e-10
 

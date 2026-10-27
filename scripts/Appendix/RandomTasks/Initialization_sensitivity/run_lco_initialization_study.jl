@@ -1,4 +1,4 @@
-# Initialization study, final replication settings: task seed 4321, 500 complete passes.
+# Initialization study: task seed 4321, 500 complete passes.
 using LinearAlgebra, Random, Statistics, Printf, DataFrames, JLD2
 
 function generate_stable_matrix(

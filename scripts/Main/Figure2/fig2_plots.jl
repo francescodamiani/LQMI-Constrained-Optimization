@@ -1,4 +1,4 @@
-# Eight individual camera-ready panels. Numerical definitions are in fig2_statistics.jl.
+# Eight individual Figure 2 panels. Numerical definitions are in fig2_statistics.jl.
 using Plots, LaTeXStrings
 using Plots.PlotMeasures
 

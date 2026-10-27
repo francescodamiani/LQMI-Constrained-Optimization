@@ -1,4 +1,4 @@
-# Original random task, normalization, analytical-cost and summary helpers.
+# Random task, normalization, analytical-cost and summary helpers.
 using LinearAlgebra, Random, Printf, Statistics, DataFrames
 
 function generate_stable_matrix(n; ρ_max=0.9, rng=Random.default_rng())

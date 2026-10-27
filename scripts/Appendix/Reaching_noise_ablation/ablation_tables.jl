@@ -1,4 +1,4 @@
-# Complete original CSV; no CSV.jl dependency or duplicate numerical exports.
+# Complete published CSV; no CSV.jl dependency or duplicate numerical exports.
 using DelimitedFiles
 
 const REACHING_ABLATION_CSV="calibrated_fixed_gain_noise_ablation_subset.csv"
@@ -20,7 +20,7 @@ function load_reaching_ablation(data_dir)
     names==expected || error("Unexpected reaching ablation CSV columns")
     df=DataFrame([name==:condition ? String.(values[:,i]) : Float64.(values[:,i])
         for (i,name) in enumerate(names)],names)
-    nrow(df)==35 || error("The original reaching ablation must contain all 35 rows")
+    nrow(df)==35 || error("The reaching ablation must contain all 35 rows")
     unique(df.sigma_eta)==REACHING_ABLATION_LEVELS || error("Unexpected internal-noise grid")
     for σ_η in REACHING_ABLATION_LEVELS
         df.condition[df.sigma_eta.==σ_η]==REACHING_ABLATION_CONDITIONS || error("Incomplete ablation conditions")
@@ -39,7 +39,7 @@ end
 function print_reaching_ablation(data;io=stdout)
     df=data["df_results"]
     println(io,"Calibrated Figure 2 reaching — fixed full-model LCO gains; ",
-        get(data,"generated_by_current_core",false) ? "analytical recomputation" : "original archived results")
+        get(data,"generated_by_current_core",false) ? "analytical recomputation" : "published results")
     println(io,"No reoptimization. Combined sensory removal zeros additive omega and multiplicative rho together.")
     columns=["eta"=>:sigma_eta,"Full"=>:full_noise,"No process"=>:no_process_noise,
         "No additive sensory"=>:no_additive_sensory_noise,"No combined sensory"=>:no_all_sensory_noise,
@@ -57,6 +57,6 @@ function print_reaching_ablation(data;io=stdout)
     end
     println(io,"\nReductions are 100*(1-SD_ablated/SD_full) with the same frozen gains. They are not additive variance fractions.")
     println(io,"Analytical terminal SD is 8.63464–10.54364%; the Figure 2 MC sample SD endpoints are 8.55236–10.45508%.")
-    println(io,"Reviewer ranges exclude eta=0; its process reduction is 83.7861% and its internal reduction is zero.")
+    println(io,"Reported reduction ranges exclude eta=0; its process reduction is 83.7861% and its internal reduction is zero.")
     println(io,"Tables display 12 significant digits; saved CSV/JLD2 retains full available precision.")
 end

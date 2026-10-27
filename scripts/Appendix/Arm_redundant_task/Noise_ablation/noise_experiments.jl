@@ -61,7 +61,7 @@ function monte_carlo_component_metrics(p,K_matrix,L_matrix,σ_η,N_trials_MC;
         p.x_1_mean,p.z_1_mean,p.Σ_1_x,p.Σ_1_z,p.Q_matrix,p.R_matrix,
         Matrix(noise.Ω_ξ),Matrix(noise.Ω_ω),Matrix(noise.Ω_η),N_trials_MC;
         rng=MersenneTwister(random_seed))
-    # Core axes: dimension,time,trial. Original statistics use sample variance
+    # Core axes: dimension,time,trial. Statistics use sample variance
     # across trials at each time, then average those variances over 1:T-2.
     variance_x_MC = component_sample_variances(mc.x_traces,temporal_window)
     variance_z_MC = component_sample_variances(mc.z_traces,temporal_window)
@@ -118,8 +118,8 @@ function simulate_behavioral_variability(p,policies;N_trials_MC=5000)
         baseline === nothing && error("Behavioral sweep requires zero internal noise")
         for state in ["x","z"],mode in ["analytical","MC"]
             variance = data["variance_$(state)_$(mode)_$(method)"]
-            # The original archive stores variance increases; SD increases
-            # for the reviewer-facing tables are derived after square roots.
+            # The archive stores variance increases; SD increases
+            # for the printed tables are derived after square roots.
             data["relative_$(state)_$(mode)_$(method)"] = 100 .* (variance ./ variance[:,baseline] .- 1)
         end
     end
@@ -152,7 +152,7 @@ function simulate_original_ablation(p,policies)
     return data
 end
 
-# These source gain windows differ from the older appendix plotting helper.
+# These gain metrics average over interior time slices.
 function mean_log_pseudodeterminant(gain_matrix;tolerance=1e-6)
     return mean(sum(log,filter(>(tolerance),svdvals(gain_matrix[:,:,t]));init=0.0)
         for t in 2:size(gain_matrix,3)-1)
@@ -255,8 +255,8 @@ function simulate_noise_experiments(output_dir;experiments=["behavioral","origin
         else
             published = joinpath(PROJECT_ROOT,"data","published","Appendix","Arm_redundant_task","Noise_ablation")
             policies = load_benchmark(published,NOISE_DATA_FILES["policies"])
-            policies["sigma_eta_list"] == sigma_eta_list || error("Original policy grid differs")
-            all(policies["completed_solutions"]) || error("Original policies are incomplete")
+            policies["sigma_eta_list"] == sigma_eta_list || error("Saved policy grid differs")
+            all(policies["completed_solutions"]) || error("Saved policies are incomplete")
         end
         policies["policy_provenance"] = validation_only || reoptimize ? "recomputed full model" : "archived full model"
         save_noise_result(output_dir,NOISE_DATA_FILES["policies"],policies;validation_only)

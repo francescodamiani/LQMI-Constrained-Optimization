@@ -1,5 +1,5 @@
-# Migrated from run_elbow_reaching_wrong_sensory_model_sweep.jl; numerical loops and statistics retained.
-# Only --simulate loads this module. Full settings are the historical settings.
+# Sensory-model mismatch sweep: optimize under assumed noise and evaluate under true noise.
+# Loaded only for explicit simulation reruns.
 module Overestimation
 using LinearAlgebra, Statistics, Random, Printf, MultivariateStats, JLD2
 using ..IdentifiabilitySimulation: Todorov_optimization_multidimensional_case,
@@ -363,7 +363,7 @@ if !isapprox(
     error("The assumed sensory-noise grid must contain 0.01 exactly.")
 end
 
-#OPTIMIZATION PARAMETERS: SAME AS THE ORIGINAL REACHING SWEEP -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#OPTIMIZATION PARAMETERS -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 N_iter_Todorov = validation_only ? 3 : 500
 

@@ -6,15 +6,15 @@ include(joinpath(@__DIR__,"..","..","benchmark_tables.jl"))
 function benchmark_main(args=ARGS)
     if "--help" in args
         println("""
-        Historical stabilization arm: m=6,p=9,k=1,T=300; six noise levels; TOD/LCO 500 passes. No GD.
+        Redundant-arm stabilization: m=6,p=9,k=1,T=300; six noise levels; TOD/LCO 500 passes. No GD.
           julia scripts/Appendix/Arm_redundant_task/Under_observed/under_observed.jl
-          Default: print Markdown tables from the complete original JLD2 archive.
-          --simulate   rerun the original publication settings (can be expensive)
+          Default: print Markdown tables from the complete saved JLD2 archive.
+          --simulate   rerun the publication settings (can be expensive)
           --validate   with --simulate, run a small explicitly marked numerical test
           --tag=NAME   save new numerical results under this generated-run tag
           --data=DIR   print tables from an existing compatible run, without recomputation
           --force      allow an existing generated run directory (benchmarks resume saved rows)
-        No figures or duplicate table files are generated. Historical data are never overwritten.
+        No figures or duplicate table files are generated. Published data are never overwritten.
         """)
         return
     end

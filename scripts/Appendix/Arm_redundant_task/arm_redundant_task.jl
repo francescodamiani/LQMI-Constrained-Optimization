@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
-# Historical stabilization experiments: run the original settings and write PDFs.
-# No original arm numerical datasets were supplied or are bundled.
+# Redundant-arm stabilization experiments: run simulations and write PDFs.
+# Full trajectory datasets for these arm figures are not bundled.
 include(joinpath(@__DIR__,"..","..","..","src","project.jl"))
 ENV["GKSwstype"] = get(ENV,"GKSwstype","100")
 using JLD2
@@ -35,13 +35,13 @@ end
 function arm_main(args=ARGS)
     if "--help" in args
         println("""
-        Historical redundant-arm stabilization task (Julia 1.8.5)
+        Redundant-arm stabilization task (Julia 1.8.5)
           julia scripts/Appendix/Arm_redundant_task/arm_redundant_task.jl
-            Recompute the original noise sweep and non-Gaussian test, then plot PDFs.
-            This performs full simulations; no original numerical arm data are bundled.
+            Recompute the noise sweep and non-Gaussian test, then plot PDFs.
+            This performs full simulations; figure trajectory datasets are not bundled.
           --simulate                 explicit alias for the default computation
-          --experiment=sweep         original Figure 2b–h and Figures 4–5
-          --experiment=non_gaussian  original Figure 6
+          --experiment=sweep         internal-noise sweep and PCA diagnostics
+          --experiment=non_gaussian  non-Gaussian noise comparison
           --save-data --tag=NAME      optionally cache numerical results locally
           --data=FOLDER              plot a compatible cache without simulations
           --force                    replace an explicitly named numerical cache
@@ -59,13 +59,13 @@ function arm_main(args=ARGS)
     if !options.simulate
         for experiment in experiments
             isfile(joinpath(options.data_dir,filenames[experiment])) ||
-                error("Missing arm cache: $(joinpath(options.data_dir,filenames[experiment])). Run the experiment to generate plots; no original arm datasets are bundled.")
+                error("Missing arm cache: $(joinpath(options.data_dir,filenames[experiment])). Run the experiment to generate plots; figure trajectory datasets are not bundled.")
         end
     end
     prepare_generated_directory(options.figure_dir,"figures";force=true)
     if options.simulate
         options.save_data && prepare_generated_directory(options.data_dir,"data";force=options.force)
-        println("Running historical arm simulations with full publication settings.")
+        println("Running redundant-arm simulations with full publication settings.")
         include(joinpath(@__DIR__,"..","..","..","src","MyFunctionsOptimalRegularizedSolutions.jl"))
         isdefined(@__MODULE__,:ArmNoiseRNG) || include(joinpath(@__DIR__,"arm_task.jl"))
         include(joinpath(@__DIR__,"Muscoskeletal_Internal_Noise_Sweep.jl"))

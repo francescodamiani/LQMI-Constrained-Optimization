@@ -7,7 +7,7 @@ include(joinpath(@__DIR__,"..","..","Main","Figure2","reaching_task.jl"))
 
 function sample_identifiability(seed, N, n, nz, p, T, mx, mz, Σx, Σz,
     A, B, C, H, D, K, M, L, Ωξ, Ωω, Ωη, Q, R)
-    # Historical scripts expect (dimension, trial, time); the core returns
+    # Dataset arrays use (dimension, trial, time); the core returns
     # (dimension, time, trial). Each condition resets its own MersenneTwister.
     mc = monte_carlo_simulation(L,K,A,B,H,C,D,T,n,size(B,2),p,mx,mz,
         Σx,Σz,Q,R,Matrix(Ωξ),Matrix(Ωω),Matrix(Ωη),N;rng=MersenneTwister(seed))
@@ -28,7 +28,7 @@ function save_results(validation_only, path, args...)
 end
 
 function validation_reference()
-    # Same dynamics/cost construction, with the historical .01 external noises.
+    # Reaching dynamics and costs, with .01 baseline external-noise amplitudes.
     # Only horizon, trials, iterations and sweep sizes are reduced for validation.
     p0 = reaching_problem(T_move=0.07)
     p = merge(p0,(;σ_ω_add_sensory_noise=0.01,σ_ϵ_mult_control_noise=0.01,

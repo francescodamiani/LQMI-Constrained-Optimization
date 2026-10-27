@@ -1,4 +1,4 @@
-# Final calibrated reaching model, from the refined reviewer-response script.
+# Calibrated elbow-reaching model for Figure 2.
 using LinearAlgebra, Random, Statistics
 
 function reaching_problem(; Δt=0.01, T_move=0.40, σ_ξ=0.01)
@@ -30,7 +30,7 @@ r = 5e-3
 
 σ_ω_add_sensory_noise = deg2rad(0.9)    #Proprioceptive precision: van Beers et al. (1998).
 σ_ϵ_mult_control_noise = 0.10           #Signal-dependent motor noise: Liu & Todorov (2007).
-σ_ρ_mult_sensory_noise = 0.01           #Unchanged from the original reaching model.
+σ_ρ_mult_sensory_noise = 0.01           #Multiplicative sensory-noise amplitude.
 
 #DEFINITION OF THE ARM MODEL -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

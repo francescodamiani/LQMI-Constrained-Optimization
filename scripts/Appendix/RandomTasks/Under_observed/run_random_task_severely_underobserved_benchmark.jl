@@ -1,4 +1,4 @@
-# Under-observed random benchmark. Numerical body adapted from the rebuttal script.
+# Under-observed random-task benchmark: TOD, LCO and direct GD.
 using Optim, LinearAlgebra, Random, Printf, DataFrames, JLD2
 include(joinpath(@__DIR__,"..","..","..","Main","Figure1","fig1_tasks.jl"))
 
@@ -115,7 +115,7 @@ options_GD = Optim.Options(
     show_trace=false
 )
 
-#The original LCO routine has a fixed pass count rather than an early-stopping test.
+#The LCO routine has a fixed pass count rather than an early-stopping test.
 #This tolerance is used only to report a final relative convergence residual.
 lco_residual_tolerance = 1e-6
 lco_monotonicity_relative_tolerance = 1e-10

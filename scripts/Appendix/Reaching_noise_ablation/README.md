@@ -2,12 +2,12 @@
 
 This appendix analysis supports main Figure 2: internal noise can affect the
 optimal policy while its direct effect on endpoint variability remains smaller
-than process disturbances. All ablations freeze the original full-model K/L.
+than process disturbances. All ablations freeze the full-model K/L.
 
 With Julia 1.8.5 and the root pinned environment:
 
 ```bash
-# Original saved numerical tables; no computation or file output:
+# Saved numerical tables; no computation or file output:
 julia scripts/Appendix/Reaching_noise_ablation/reaching_noise_ablation.jl
 # Recompute all 35 analytical cases with existing Figure 2 gains:
 julia scripts/Appendix/Reaching_noise_ablation/reaching_noise_ablation.jl --simulate --tag=my_run
@@ -29,7 +29,7 @@ full-model objective must agree with the saved record before recomputation.
 
 The 20° elbow reach starts at −π/9, with 6 states, 9 controls, 3 angle observations,
 Δt=.01 s and T=41. Noise amplitudes are ξ=.01, ω=deg2rad(.9), ε=.10, ρ=.01:
-Ωξ=σξ²I₆, Ωω=σω²I₃, Ωη=ση²I₆, C=σεB, D=σρH. All original costs are reused.
+Ωξ=σξ²I₆, Ωω=σω²I₃, Ωη=ση²I₆, C=σεB, D=σρH. The same costs are used for all ablations.
 Nominal targets `[0,.01,.02,.03,.04]` select actual levels
 **[0,.011,.019,.029,.040]**, indices **[1,6,10,15,20]**; no gains are interpolated.
 
@@ -73,4 +73,4 @@ finite-sample difference without a calibration change.
 CSV/JLD2 and prints all six metric tables; `fixed_gain_ablation.jl` checks the
 model, evaluates fixed policies and saves results. See the
 [dataset README](../../../data/published/Appendix/Reaching_noise_ablation/README.md)
-for the complete original 35-row CSV, units, hashes and provenance.
+for the complete 35-row CSV, units, hashes and provenance.

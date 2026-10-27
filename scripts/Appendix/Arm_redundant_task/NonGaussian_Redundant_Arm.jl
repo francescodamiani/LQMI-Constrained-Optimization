@@ -1,4 +1,4 @@
-# Historical appendix Figure 6: fixed LCO gains, matched-variance noise shapes.
+# Non-Gaussian noise comparison: fixed LCO gains, matched-variance noise shapes.
 using Random, Statistics, Printf
 
 function simulate_nongaussian_arm(; problem_data=arm_problem(),
