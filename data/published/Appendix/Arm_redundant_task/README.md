@@ -1,17 +1,13 @@
 # Redundant-arm data
 
-Full trajectory datasets for the k=3 arm figures are not bundled.
-The following analyses have complete numerical archives:
+Full trajectory datasets for the arm figures are not bundled. The
+[figure workflow](../../../../scripts/Appendix/Arm_redundant_task/README.md)
+runs simulations and can save a cache under
+`data/generated/Appendix/Arm_redundant_task/TAG/` for later plotting with `--data`.
+A full sweep cache is about 1 GB; PDFs go to
+`figures/generated/Appendix/Arm_redundant_task/`.
 
-- [Under_observed/](Under_observed/README.md): k=1 TOD/LCO benchmark.
-- [Noise_ablation/](Noise_ablation/README.md): k=3 full-model gains,
-  behavioral variance summaries, fixed-policy ablations and alternative noise regime.
-
-Their entry points print numerical tables from saved data without figures.
-The existing k=3 figure workflow retains its simulation/plot entry point:
-
-```bash
-julia scripts/Appendix/Arm_redundant_task/arm_redundant_task.jl
-```
-
-See the [arm experiment guide](../../../../scripts/Appendix/Arm_redundant_task/README.md) for parameters, cache schemas and commands.
+Saved numerical results are available for the separate
+[under-observed arm](Under_observed/README.md) and
+[noise-ablation](Noise_ablation/README.md) analyses. Their default commands
+print tables without simulations or figures.
