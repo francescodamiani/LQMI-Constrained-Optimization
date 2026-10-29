@@ -4,7 +4,7 @@ module Overestimation
 using LinearAlgebra, Statistics, Random, Printf, MultivariateStats, JLD2
 using ..IdentifiabilitySimulation: Todorov_optimization_multidimensional_case,
     Optimal_Control_Estimation_FullProcedure, expected_cost_raw_moments_propagation,
-    sample_identifiability, save_results
+    sample_identifiability, save_results, mean_log_pdet_over_time
 
 function terminal_elbow_SD(
     K_matrix, L_matrix, A, B, H, C, D, T,
@@ -176,19 +176,6 @@ sigma_omega_true =
 
 Ω_η_zero = zeros(n,n)
 
-baseline_noise_values = [
-    reference_results["σ_ξ"],
-    sigma_omega_true,
-    reference_results["σ_ϵ_mult_control_noise"],
-    reference_results["σ_ρ_mult_sensory_noise"]
-]
-
-if !all(isapprox.(baseline_noise_values, 0.01))
-    error(
-        "The saved reaching task does not use the required external-noise baseline of 0.01."
-    )
-end
-
 N_trials_MC = validation_only ? 64 : 2000
 random_seed = reference_results["random_seed"]
 
@@ -263,6 +250,9 @@ K_Frobenius_internal =
 L_Frobenius_internal =
     zeros(N_internal)
 
+K_log_pdet_internal = zeros(N_internal)
+L_log_pdet_internal = zeros(N_internal)
+
 for noise_idx in 1:N_internal
 
     Ω_η =
@@ -332,18 +322,17 @@ for noise_idx in 1:N_internal
             L_LCO_internal[noise_idx]
         )
 
+    K_log_pdet_internal[noise_idx] = mean_log_pdet_over_time(K_LCO_internal[noise_idx])
+    L_log_pdet_internal[noise_idx] = mean_log_pdet_over_time(L_LCO_internal[noise_idx])
+
 end
 
 #WRONG ASSUMED SENSORY-NOISE GRID -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 N_assumed_noise = validation_only ? 3 : 21
 
-sigma_omega_hat_list =
-    10.0 .^ collect(range(
-        log10(0.001),
-        stop=log10(0.1),
-        length=N_assumed_noise
-    ))
+sigma_omega_hat_list = sigma_omega_true .* 10.0 .^
+    collect(range(-1.0,stop=1.0,length=N_assumed_noise))
 
 baseline_idx =
     argmin(abs.(
@@ -356,11 +345,11 @@ sigma_omega_hat_list[baseline_idx] =
 
 if !isapprox(
     sigma_omega_hat_list[baseline_idx],
-    0.01;
+    sigma_omega_true;
     atol=0.0,
     rtol=0.0
 )
-    error("The assumed sensory-noise grid must contain 0.01 exactly.")
+    error("The assumed sensory-noise grid must contain the true amplitude exactly.")
 end
 
 #OPTIMIZATION PARAMETERS -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -445,6 +434,9 @@ K_Frobenius_wrong =
 L_Frobenius_wrong =
     zeros(N_assumed_noise)
 
+K_log_pdet_wrong = zeros(N_assumed_noise)
+L_log_pdet_wrong = zeros(N_assumed_noise)
+
 completed_wrong_conditions =
     falses(N_assumed_noise)
 
@@ -452,8 +444,10 @@ if isfile(results_file)
 
     saved_results = JLD2.load(results_file)
 
-    if saved_results["sigma_omega_hat_list"] !=
-       sigma_omega_hat_list
+    if get(saved_results,"model",nothing) != reference_results["model"] ||
+       saved_results["sigma_omega_hat_list"] != sigma_omega_hat_list ||
+       saved_results["N_trials_MC"] != N_trials_MC ||
+       saved_results["sigma_eta_list"] != sigma_eta_list
         error(
             "The saved wrong-model grid differs from the requested grid."
         )
@@ -508,6 +502,9 @@ if isfile(results_file)
     L_Frobenius_wrong .=
         saved_results["L_Frobenius_wrong"]
 
+    K_log_pdet_wrong .= saved_results["K_log_pdet_wrong"]
+    L_log_pdet_wrong .= saved_results["L_log_pdet_wrong"]
+
     completed_wrong_conditions .=
         saved_results["completed_wrong_conditions"]
 
@@ -531,6 +528,9 @@ function save_current_results()
         "time_vector", time_vector,
         "N_trials_MC", N_trials_MC,
         "random_seed", random_seed,
+        "model", reference_results["model"],
+        "reference_dataset", "data/published/Main/Figure2/",
+        "pseudodeterminant_tolerance", 1e-6,
         "sigma_omega_true", sigma_omega_true,
         "sigma_omega_hat_list", sigma_omega_hat_list,
         "sigma_eta_list", sigma_eta_list,
@@ -566,6 +566,8 @@ function save_current_results()
             sem_terminal_mean_error_wrong_deg,
         "K_Frobenius_wrong", K_Frobenius_wrong,
         "L_Frobenius_wrong", L_Frobenius_wrong,
+        "K_log_pdet_wrong", K_log_pdet_wrong,
+        "L_log_pdet_wrong", L_log_pdet_wrong,
         "completed_wrong_conditions",
             completed_wrong_conditions,
         "terminal_SD_analytical_internal_deg",
@@ -601,7 +603,9 @@ function save_current_results()
         "K_Frobenius_internal",
             K_Frobenius_internal,
         "L_Frobenius_internal",
-            L_Frobenius_internal
+            L_Frobenius_internal,
+        "K_log_pdet_internal", K_log_pdet_internal,
+        "L_log_pdet_internal", L_log_pdet_internal
     )
 
 end
@@ -806,6 +810,9 @@ for noise_idx in 1:N_assumed_noise
 
     L_Frobenius_wrong[noise_idx] =
         mean_gain_Frobenius(L_LCO)
+
+    K_log_pdet_wrong[noise_idx] = mean_log_pdet_over_time(K_LCO)
+    L_log_pdet_wrong[noise_idx] = mean_log_pdet_over_time(L_LCO)
 
     completed_wrong_conditions[noise_idx] = true
 

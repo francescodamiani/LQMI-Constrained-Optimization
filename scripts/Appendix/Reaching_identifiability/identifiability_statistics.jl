@@ -80,6 +80,7 @@ function overestimation_table(d)
             SD_percent=target,MC_SD=d["terminal_SD_MC_true_deg"][i],
             peak=d["mean_peak_velocity_wrong_deg_s"][i],SEM=d["sem_peak_velocity_wrong_deg_s"][i],
             peak_time=d["mean_peak_time_wrong_s"][i],K=d["K_Frobenius_wrong"][i],L=d["L_Frobenius_wrong"][i],
+            logK=d["K_log_pdet_wrong"][i],logL=d["L_log_pdet_wrong"][i],
             matched,eta,internal_cost,internal_peak)
     end for i in eachindex(d["sigma_omega_hat_list"])])
 end
@@ -121,6 +122,7 @@ function print_identifiability(data; io=stdout, full=false)
         print_benchmark_table(io,table,["Assumed omega"=>:assumed,"True cost"=>:cost,
             "Cost change (%)"=>:change,"Endpoint SD (%20deg)"=>:SD_percent,
             "Peak (deg/s)"=>:peak,"Peak SEM"=>:SEM,"Mean ‖K‖F"=>:K,"Mean ‖L‖F"=>:L,
+            "Mean log pdet(K)"=>:logK,"Mean log pdet(L)"=>:logL,
             "Overlap"=>:matched,"Matched eta"=>:eta,"Matched internal peak"=>:internal_peak])
         println(io,"Gains are frozen for true-system evaluation. Matching interpolates archived internal statistics only within endpoint-SD overlap; no extrapolation.")
     end
@@ -160,7 +162,7 @@ function print_identifiability(data; io=stdout, full=false)
                 "Cost change (%)"=>:change,"Endpoint SD (%20deg)"=>:SD_percent,
                 "Peak (deg/s)"=>:peak,"Peak SEM"=>:SEM,"Mean log pdet(K)"=>:logK,"Mean log pdet(L)"=>:logL])
         end
-        println(io,"C uses raw sweeps, without endpoint matching. Gain volumes average log singular-value products over t=2:",d["T"]-3,", threshold 1e-4; changes are not entrywise.")
+        println(io,"C uses raw sweeps, without endpoint matching. Gain volumes average log singular-value products over t=2:",d["T"]-3,", threshold ",d["pseudodeterminant_tolerance"],"; changes are not entrywise.")
     end
     println(io,"\nCosts and trial statistics come from the selected archives. Tables show 12 significant digits; JLD2 retains full precision. --full includes A's underestimation branch and every B condition.")
 end

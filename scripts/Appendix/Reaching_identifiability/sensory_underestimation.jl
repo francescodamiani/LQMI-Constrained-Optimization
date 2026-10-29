@@ -4,7 +4,7 @@ module Underestimation
 using LinearAlgebra, Statistics, Random, Printf, MultivariateStats, JLD2
 using ..IdentifiabilitySimulation: Todorov_optimization_multidimensional_case,
     Optimal_Control_Estimation_FullProcedure, expected_cost_raw_moments_propagation,
-    sample_identifiability, save_results
+    sample_identifiability, save_results, mean_log_pdet_over_time
 
 function terminal_elbow_SD(
     K_matrix, L_matrix, A, B, H, C, D, T,
@@ -118,27 +118,6 @@ mean_gain_Frobenius(gain_matrix) =
         for t in 2:size(gain_matrix,3)-2
     ])
 
-function mean_log_pseudodeterminant(
-    gain_matrix;
-    tolerance=1e-4
-)
-
-    time_values = zeros(size(gain_matrix,3)-3)
-
-    for (time_idx,t) in enumerate(2:size(gain_matrix,3)-2)
-
-        singular_values = svdvals(gain_matrix[:,:,t])
-        retained_values =
-            singular_values[singular_values .> tolerance]
-
-        time_values[time_idx] =
-            sum(log,retained_values; init=0.0)
-
-    end
-
-    return mean(time_values)
-
-end
 
 
 function run_experiment(reference_results, output_dir; validation_only=false)
@@ -173,27 +152,13 @@ Q_matrix = reference_results["Q_matrix"]
 R_matrix = reference_results["R_matrix"]
 Ω_ξ = reference_results["Ω_ξ"]
 
-baseline_external_noises = [
-    reference_results["σ_ξ"],
-    reference_results["σ_ω_add_sensory_noise"],
-    reference_results["σ_ϵ_mult_control_noise"],
-    reference_results["σ_ρ_mult_sensory_noise"]
-]
-
-if !all(isapprox.(baseline_external_noises, 0.01))
-    error("The loaded reaching task does not use the expected 0.01 baseline noises.")
-end
-
-#Only the true additive sensory-noise amplitude is changed in this test.
-sigma_omega_true = 0.05
+sigma_omega_true = reference_results["σ_ω_add_sensory_noise"]
 Ω_ω_true = Diagonal(fill(sigma_omega_true^2, p))
 
-#Grids for the raw-sweep comparison.
-sigma_omega_hat_list =
-    collect(range(0.05, stop=0.016, length=validation_only ? 3 : 10))
-
-sigma_eta_list =
-    (validation_only ? [0.0,0.015,0.03] : collect(0.0:0.0025:0.03))
+# Preserve the ten-point relative range: true amplitude down to 0.32 times true.
+sigma_omega_hat_list = sigma_omega_true .*
+    collect(range(1.0, stop=0.32, length=validation_only ? 3 : 10))
+sigma_eta_list = reference_results["sigma_eta_list"]
 
 N_wrong = length(sigma_omega_hat_list)
 N_internal = length(sigma_eta_list)
@@ -225,7 +190,7 @@ tol_GD = 1e-6
 #Use 1000 Monte Carlo trials, matching the published dataset.
 N_trials_MC = validation_only ? 64 : 1000
 random_seed = reference_results["random_seed"]
-pseudodeterminant_tolerance = 1e-4
+pseudodeterminant_tolerance = 1e-6
 
 function optimize_LCO_solution(Ω_ω_assumed, Ω_η_assumed)
 
@@ -354,31 +319,32 @@ if isfile(results_file)
 
     saved_results = JLD2.load(results_file)
 
-    if saved_results["sigma_omega_hat_list"] != sigma_omega_hat_list ||
+    if get(saved_results,"model",nothing) != reference_results["model"] ||
+       saved_results["sigma_omega_hat_list"] != sigma_omega_hat_list ||
        saved_results["sigma_eta_list"] != sigma_eta_list ||
        saved_results["N_trials_MC"] != N_trials_MC
         error("The saved configuration differs from the requested dense-sweep configuration.")
     end
 
-    for variable_name in [
-        "K_internal", "L_internal", "K_wrong", "L_wrong",
-        "internal_cost", "internal_MC_cost", "internal_MC_cost_SEM",
-        "internal_SD_analytical_deg", "internal_SD_MC_deg",
-        "internal_peak_velocity", "internal_peak_velocity_SEM",
-        "internal_peak_time", "internal_peak_time_SEM",
-        "internal_bias", "internal_absolute_bias", "internal_RMSE",
-        "internal_K_norm", "internal_L_norm",
-        "internal_mean_angle", "internal_mean_velocity",
-        "completed_internal", "wrong_assumed_cost", "wrong_true_cost",
-        "wrong_MC_cost", "wrong_MC_cost_SEM",
-        "wrong_SD_analytical_deg", "wrong_SD_MC_deg",
-        "wrong_peak_velocity", "wrong_peak_velocity_SEM",
-        "wrong_peak_time", "wrong_peak_time_SEM",
-        "wrong_bias", "wrong_absolute_bias", "wrong_RMSE",
-        "wrong_K_norm", "wrong_L_norm",
-        "wrong_mean_angle", "wrong_mean_velocity", "completed_wrong"
+    for (variable_name, target) in [
+        "K_internal"=>K_internal, "L_internal"=>L_internal, "K_wrong"=>K_wrong, "L_wrong"=>L_wrong,
+        "internal_cost"=>internal_cost, "internal_MC_cost"=>internal_MC_cost, "internal_MC_cost_SEM"=>internal_MC_cost_SEM,
+        "internal_SD_analytical_deg"=>internal_SD_analytical_deg, "internal_SD_MC_deg"=>internal_SD_MC_deg,
+        "internal_peak_velocity"=>internal_peak_velocity, "internal_peak_velocity_SEM"=>internal_peak_velocity_SEM,
+        "internal_peak_time"=>internal_peak_time, "internal_peak_time_SEM"=>internal_peak_time_SEM,
+        "internal_bias"=>internal_bias, "internal_absolute_bias"=>internal_absolute_bias, "internal_RMSE"=>internal_RMSE,
+        "internal_K_norm"=>internal_K_norm, "internal_L_norm"=>internal_L_norm,
+        "internal_mean_angle"=>internal_mean_angle, "internal_mean_velocity"=>internal_mean_velocity,
+        "completed_internal"=>completed_internal, "wrong_assumed_cost"=>wrong_assumed_cost, "wrong_true_cost"=>wrong_true_cost,
+        "wrong_MC_cost"=>wrong_MC_cost, "wrong_MC_cost_SEM"=>wrong_MC_cost_SEM,
+        "wrong_SD_analytical_deg"=>wrong_SD_analytical_deg, "wrong_SD_MC_deg"=>wrong_SD_MC_deg,
+        "wrong_peak_velocity"=>wrong_peak_velocity, "wrong_peak_velocity_SEM"=>wrong_peak_velocity_SEM,
+        "wrong_peak_time"=>wrong_peak_time, "wrong_peak_time_SEM"=>wrong_peak_time_SEM,
+        "wrong_bias"=>wrong_bias, "wrong_absolute_bias"=>wrong_absolute_bias, "wrong_RMSE"=>wrong_RMSE,
+        "wrong_K_norm"=>wrong_K_norm, "wrong_L_norm"=>wrong_L_norm,
+        "wrong_mean_angle"=>wrong_mean_angle, "wrong_mean_velocity"=>wrong_mean_velocity, "completed_wrong"=>completed_wrong
     ]
-        getfield(Main, Symbol(variable_name)) .= saved_results[variable_name]
+        target .= saved_results[variable_name]
     end
 
     saved_pseudodeterminant_tolerance = NaN
@@ -402,29 +368,25 @@ if isfile(results_file)
     else
         for noise_idx in findall(completed_internal)
             internal_K_log_pdet[noise_idx] =
-                mean_log_pseudodeterminant(
-                    K_internal[:,:,:,noise_idx];
-                    tolerance=pseudodeterminant_tolerance
+                mean_log_pdet_over_time(
+                    K_internal[:,:,:,noise_idx]
                 )
 
             internal_L_log_pdet[noise_idx] =
-                mean_log_pseudodeterminant(
-                    L_internal[:,:,:,noise_idx];
-                    tolerance=pseudodeterminant_tolerance
+                mean_log_pdet_over_time(
+                    L_internal[:,:,:,noise_idx]
                 )
         end
 
         for noise_idx in findall(completed_wrong)
             wrong_K_log_pdet[noise_idx] =
-                mean_log_pseudodeterminant(
-                    K_wrong[:,:,:,noise_idx];
-                    tolerance=pseudodeterminant_tolerance
+                mean_log_pdet_over_time(
+                    K_wrong[:,:,:,noise_idx]
                 )
 
             wrong_L_log_pdet[noise_idx] =
-                mean_log_pseudodeterminant(
-                    L_wrong[:,:,:,noise_idx];
-                    tolerance=pseudodeterminant_tolerance
+                mean_log_pdet_over_time(
+                    L_wrong[:,:,:,noise_idx]
                 )
         end
     end
@@ -447,6 +409,8 @@ function save_current_results()
         "time_vector", time_vector,
         "N_trials_MC", N_trials_MC,
         "random_seed", random_seed,
+        "model", reference_results["model"],
+        "reference_dataset", "data/published/Main/Figure2/",
         "pseudodeterminant_tolerance", pseudodeterminant_tolerance,
         "sigma_omega_true", sigma_omega_true,
         "sigma_omega_hat_list", sigma_omega_hat_list,
@@ -517,13 +481,14 @@ for noise_idx in 1:N_internal
         ": sigma_eta = ", sigma_eta
     )
 
-    K_LCO, L_LCO =
-        optimize_LCO_solution(Ω_ω_true, Ω_η)
-
-    x_trajectories,
-    internal_MC_cost[noise_idx],
-    internal_MC_cost_SEM[noise_idx] =
-        simulate_true_system(K_LCO, L_LCO, Ω_η)
+    # Reuse Figure 2 policies and the first N_trials_MC saved trials.
+    # This preserves this analysis's 1000-trial convention without reoptimization.
+    K_LCO = reference_results["K_LCO_all"][noise_idx]
+    L_LCO = reference_results["L_LCO_all"][noise_idx]
+    x_trajectories = view(reference_results["x_store_LCO"][noise_idx],:,1:N_trials_MC,:)
+    reference_costs = reference_results["trial_costs_LCO"][noise_idx][1:N_trials_MC]
+    internal_MC_cost[noise_idx] = mean(reference_costs)
+    internal_MC_cost_SEM[noise_idx] = std(reference_costs)/sqrt(N_trials_MC)
 
     metrics = compute_MC_metrics(x_trajectories,time_vector)
 
@@ -561,15 +526,13 @@ for noise_idx in 1:N_internal
     internal_K_norm[noise_idx] = mean_gain_Frobenius(K_LCO)
     internal_L_norm[noise_idx] = mean_gain_Frobenius(L_LCO)
     internal_K_log_pdet[noise_idx] =
-        mean_log_pseudodeterminant(
-            K_LCO;
-            tolerance=pseudodeterminant_tolerance
+        mean_log_pdet_over_time(
+            K_LCO
         )
 
     internal_L_log_pdet[noise_idx] =
-        mean_log_pseudodeterminant(
-            L_LCO;
-            tolerance=pseudodeterminant_tolerance
+        mean_log_pdet_over_time(
+            L_LCO
         )
     internal_mean_angle[noise_idx,:] .= metrics.mean_elbow_angle_deg
     internal_mean_velocity[noise_idx,:] .= metrics.mean_elbow_velocity_deg_s
@@ -590,7 +553,7 @@ end
 
 #WRONG ASSUMED SENSORY MODEL, EVALUATED IN THE TRUE SYSTEM -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-println("\n--- Sensory-noise underestimation: true sigma_omega remains 0.05 ---")
+println("\n--- Sensory-noise underestimation: true sigma_omega remains ",sigma_omega_true," ---")
 
 for noise_idx in 1:N_wrong
 
@@ -620,10 +583,16 @@ for noise_idx in 1:N_wrong
             optimize_LCO_solution(Ω_ω_assumed, Ω_η_zero)
     end
 
-    x_trajectories,
-    wrong_MC_cost[noise_idx],
-    wrong_MC_cost_SEM[noise_idx] =
-        simulate_true_system(K_LCO, L_LCO, Ω_η_zero)
+    if noise_idx == baseline_wrong_idx
+        x_trajectories = view(reference_results["x_store_LCO"][baseline_internal_idx],:,1:N_trials_MC,:)
+        wrong_MC_cost[noise_idx] = internal_MC_cost[baseline_internal_idx]
+        wrong_MC_cost_SEM[noise_idx] = internal_MC_cost_SEM[baseline_internal_idx]
+    else
+        x_trajectories,
+        wrong_MC_cost[noise_idx],
+        wrong_MC_cost_SEM[noise_idx] =
+            simulate_true_system(K_LCO, L_LCO, Ω_η_zero)
+    end
 
     metrics = compute_MC_metrics(x_trajectories,time_vector)
 
@@ -672,15 +641,13 @@ for noise_idx in 1:N_wrong
     wrong_K_norm[noise_idx] = mean_gain_Frobenius(K_LCO)
     wrong_L_norm[noise_idx] = mean_gain_Frobenius(L_LCO)
     wrong_K_log_pdet[noise_idx] =
-        mean_log_pseudodeterminant(
-            K_LCO;
-            tolerance=pseudodeterminant_tolerance
+        mean_log_pdet_over_time(
+            K_LCO
         )
 
     wrong_L_log_pdet[noise_idx] =
-        mean_log_pseudodeterminant(
-            L_LCO;
-            tolerance=pseudodeterminant_tolerance
+        mean_log_pdet_over_time(
+            L_LCO
         )
     wrong_mean_angle[noise_idx,:] .= metrics.mean_elbow_angle_deg
     wrong_mean_velocity[noise_idx,:] .= metrics.mean_elbow_velocity_deg_s

@@ -36,7 +36,8 @@ function reaching_identifiability_main(args=ARGS)
           --data=DIR                tables from an existing saved run
           --force                   replace results within an existing generated tag
         Published data are never overwritten. Generated data: data/generated/Appendix/Reaching_identifiability/NAME/.
-        A/B reuse the saved internal-noise reference, including its zero-noise policy.
+        A/C reuse the calibrated main Figure 2 model and internal-noise policies.
+        B retains its separate saved reference and noise settings.
         """)
         return
     end
