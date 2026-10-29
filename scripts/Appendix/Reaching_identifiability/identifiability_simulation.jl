@@ -28,16 +28,13 @@ function save_results(validation_only, path, args...)
     return results
 end
 
-function validation_reference(;calibrated=false)
-    # Reaching dynamics and costs, with .01 baseline external-noise amplitudes.
+function validation_reference()
+    # Calibrated reaching dynamics, costs and external-noise amplitudes.
     # Only horizon, trials, iterations and sweep sizes are reduced for validation.
-    p0 = reaching_problem(T_move=0.07)
-    p = calibrated ? p0 : merge(p0,(;σ_ω_add_sensory_noise=0.01,σ_ϵ_mult_control_noise=0.01,
-        σ_ρ_mult_sensory_noise=0.01,C=0.01*p0.B,D=0.01*p0.H,
-        Ω_ω=Matrix(Diagonal(fill(0.01^2,3)))))
+    p = reaching_problem(T_move=0.07)
     d = Dict{String,Any}(string(k)=>v for (k,v) in pairs(p))
     d["time_vector"]=collect(0:p.Δt:p.T_move)
-    d["sigma_eta_list"]=calibrated ? [0.0,0.019,0.04] : [0.0,0.01,0.03]
+    d["sigma_eta_list"]=[0.0,0.019,0.04]
     d["random_seed"]=1; d["N_trials_MC"]=64
     for key in FIG2_TRAJECTORY_FIELDS; d[key]=Array{Float64,3}[]; end
     for key in ["K_TOD_all","L_TOD_all","K_LCO_all","L_LCO_all"]; d[key]=Array{Float64,3}[]; end
@@ -61,7 +58,7 @@ function validation_reference(;calibrated=false)
         end
     end
     d["validation_only"]=true;d["generated_by_current_core"]=true
-    calibrated && (d["model"]=Dict(string(k)=>v for (k,v) in pairs(p)))
+    d["model"]=Dict(string(k)=>v for (k,v) in pairs(p))
     return d
 end
 
@@ -80,32 +77,14 @@ function calibrated_reference()
 end
 
 include("sensory_overestimation.jl")
-include("matched_noise_sources.jl")
 include("sensory_underestimation.jl")
 
-function simulate_identifiability(output_dir,published_dir,experiments;validation_only=false)
-    reference=nothing
-    if "noise_sources" in experiments
-        # This separate experiment retains its existing model and reference data.
-        reference=validation_only ? validation_reference() : load_fig2(joinpath(published_dir,"reference"))
-        if validation_only
-            save_fig2(joinpath(output_dir,"reference"),reference)
-        else
-            mkpath(joinpath(output_dir,"reference"))
-            JLD2.jldopen(joinpath(output_dir,"reference","sweep.jld2"),"w";compress=true) do file
-                for (key,value) in reference
-                    key in FIG2_TRAJECTORY_FIELDS || (file[key]=value)
-                end
-            end
-        end
-    end
-    calibrated=any(in(["overestimation","underestimation"]),experiments) ?
-        (validation_only ? validation_reference(calibrated=true) : calibrated_reference()) : nothing
-    modules=Dict("overestimation"=>Overestimation,"noise_sources"=>MatchedNoiseSources,
+function simulate_identifiability(output_dir,experiments;validation_only=false)
+    reference=validation_only ? validation_reference() : calibrated_reference()
+    modules=Dict("overestimation"=>Overestimation,
         "underestimation"=>Underestimation)
     for experiment in experiments
-        modules[experiment].run_experiment(experiment=="noise_sources" ? reference : calibrated,
-            output_dir;validation_only)
+        modules[experiment].run_experiment(reference,output_dir;validation_only)
     end
 end
 end

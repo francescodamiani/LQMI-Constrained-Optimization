@@ -6,10 +6,10 @@ include(joinpath(@__DIR__,"identifiability_statistics.jl"))
 using CodecZlib # Load before reading compressed JLD2 data on Julia 1.8.5.
 
 const IDENTIFIABILITY_FILES = Dict("overestimation"=>"sensory_overestimation.jld2",
-    "noise_sources"=>"matched_noise_sources.jld2","underestimation"=>"sensory_underestimation.jld2")
+    "underestimation"=>"sensory_underestimation.jld2")
 
 function identifiability_options(args)
-    experiments=["overestimation","noise_sources","underestimation"]
+    experiments=["overestimation","underestimation"]
     common=String[]
     for arg in args
         if startswith(arg,"--experiment=")
@@ -29,15 +29,14 @@ function reaching_identifiability_main(args=ARGS)
         println("""
         Internal-noise identifiability comparisons: numerical tables, no figures.
           julia scripts/Appendix/Reaching_identifiability/reaching_identifiability.jl
-          --full                    every A/B condition (C always includes both complete sweeps)
-          --experiment=overestimation,noise_sources,underestimation   select analyses
+          --full                    include the complete sensory-model mismatch grid
+          --experiment=overestimation,underestimation   select analyses
           --simulate --tag=NAME     explicitly rerun selected experiments with publication settings
           --validate                with --simulate: 8 samples, 64 trials, 3 iterations, reduced grids
           --data=DIR                tables from an existing saved run
           --force                   replace results within an existing generated tag
         Published data are never overwritten. Generated data: data/generated/Appendix/Reaching_identifiability/NAME/.
-        A/C reuse the calibrated main Figure 2 model and internal-noise policies.
-        B retains its separate saved reference and noise settings.
+        Both analyses reuse the calibrated main Figure 2 model and internal-noise policies.
         """)
         return
     end
@@ -45,14 +44,10 @@ function reaching_identifiability_main(args=ARGS)
     if options.simulate
         prepare_generated_directory(options.data_dir,"data";force=options.force)
         include(joinpath(@__DIR__,"identifiability_simulation.jl"))
-        published=joinpath(PROJECT_ROOT,"data","published","Appendix","Reaching_identifiability")
         Base.invokelatest(IdentifiabilitySimulation.simulate_identifiability,
-            options.data_dir,published,options.experiments;validation_only=options.validation_only)
+            options.data_dir,options.experiments;validation_only=options.validation_only)
     end
     data=Dict(e=>load_benchmark(options.data_dir,IDENTIFIABILITY_FILES[e]) for e in options.experiments)
-    if "noise_sources" in options.experiments
-        data["reference"]=load_benchmark(joinpath(options.data_dir,"reference"),"sweep.jld2")
-    end
     print_identifiability(data;full=options.full)
     return data
 end
