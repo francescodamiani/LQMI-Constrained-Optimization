@@ -104,7 +104,7 @@ function print_identifiability(data; io=stdout, full=false)
             "Peak (deg/s)"=>:peak,"Peak SEM"=>:SEM,"Mean ‖K‖F"=>:K,"Mean ‖L‖F"=>:L,
             "Mean log pdet(K)"=>:logK,"Mean log pdet(L)"=>:logL,
             "Overlap"=>:matched,"Matched eta"=>:eta,"Matched internal peak"=>:internal_peak])
-        println(io,"Gains are frozen for true-system evaluation. Matching interpolates archived internal statistics only within endpoint-SD overlap; no extrapolation.")
+        println(io,"Gains are frozen for true-system evaluation. Matching interpolates saved internal statistics only within endpoint-SD overlap; no extrapolation.")
     end
     if haskey(data,"underestimation")
         d=data["underestimation"]
@@ -118,6 +118,6 @@ function print_identifiability(data; io=stdout, full=false)
         end
         println(io,"Underestimation uses raw sweeps, without endpoint matching. Gain volumes average log singular-value products over t=2:",d["T"]-3,", threshold ",d["pseudodeterminant_tolerance"],"; changes are not entrywise.")
     end
-    println(io,"\nCosts and trial statistics come from the selected archives. Tables show 12 significant digits; JLD2 retains full precision. --full includes the lower half of the sensory-model mismatch grid.")
+    println(io,"\nCosts and trial statistics come from the saved results. Tables show 12 significant digits; JLD2 retains full precision. --full includes the lower half of the sensory-model mismatch grid.")
 end
 

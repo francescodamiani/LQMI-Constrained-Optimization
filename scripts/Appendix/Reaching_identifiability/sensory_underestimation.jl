@@ -121,7 +121,7 @@ mean_gain_Frobenius(gain_matrix) =
 
 
 function run_experiment(reference_results, output_dir; validation_only=false)
-#LOAD THE EXISTING REACHING TASK -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#LOAD THE CALIBRATED REACHING TASK -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 println("\n------- ELBOW REACHING: SENSORY-NOISE UNDERESTIMATION TEST ----------------------\n")
 
@@ -155,7 +155,7 @@ R_matrix = reference_results["R_matrix"]
 sigma_omega_true = reference_results["σ_ω_add_sensory_noise"]
 Ω_ω_true = Diagonal(fill(sigma_omega_true^2, p))
 
-# Preserve the ten-point relative range: true amplitude down to 0.32 times true.
+# Ten assumed sensory amplitudes, from the true value down to 0.32 times true.
 sigma_omega_hat_list = sigma_omega_true .*
     collect(range(1.0, stop=0.32, length=validation_only ? 3 : 10))
 sigma_eta_list = reference_results["sigma_eta_list"]
@@ -187,7 +187,7 @@ tol_GD = 1e-6
 β2_Adam = 0.999
 ϵ_Adam = 1e-8
 
-#Use 1000 Monte Carlo trials, matching the published dataset.
+#Use 1000 Monte Carlo trials per condition.
 N_trials_MC = validation_only ? 64 : 1000
 random_seed = reference_results["random_seed"]
 pseudodeterminant_tolerance = 1e-6
@@ -482,7 +482,7 @@ for noise_idx in 1:N_internal
     )
 
     # Reuse Figure 2 policies and the first N_trials_MC saved trials.
-    # This preserves this analysis's 1000-trial convention without reoptimization.
+    # Compute summaries from 1000 trials per condition.
     K_LCO = reference_results["K_LCO_all"][noise_idx]
     L_LCO = reference_results["L_LCO_all"][noise_idx]
     x_trajectories = view(reference_results["x_store_LCO"][noise_idx],:,1:N_trials_MC,:)

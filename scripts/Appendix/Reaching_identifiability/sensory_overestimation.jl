@@ -137,7 +137,7 @@ mean_gain_Frobenius(gain_matrix) =
 
 
 function run_experiment(reference_results, output_dir; validation_only=false)
-#LOAD THE EXISTING BEHAVIORALLY CALIBRATED REACHING TASK -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#LOAD THE CALIBRATED REACHING TASK -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 println("\n------- ELBOW REACHING: WRONG SENSORY-MODEL SWEEP ----------------------\n")
 

@@ -46,12 +46,12 @@ include a `model` dictionary recording the complete calibrated definition.
 Each optimized condition uses 500 TOD iterations and 500 LCO cycles from TOD,
 with regularization `[0]`, fallback `[1e-10,1e-8,1e-6]` and no internal GD.
 Monte Carlo seed is 1; overestimation uses 2,000 trials and underestimation
-retains 1,000. Internal-noise policies and trials are reused from Figure 2;
+uses 1,000. Internal-noise policies and trials are reused from Figure 2;
 underestimation uses the first 1,000 trials. Both analyses share the correctly
 specified, zero-internal-noise gains.
 
 - **Sensory-model mismatch:** true sensory amplitude `deg2rad(0.9)`,
-  internal noise zero. The existing 21-point logarithmic grid spans
+  internal noise zero. The 21-point logarithmic grid spans
   `0.1–10 ×` the true amplitude (approximately `0.001571–0.157080` rad).
   Default tables show the baseline and overestimation conditions; `--full`
   also includes the lower half of this same grid. Gains are optimized using
@@ -71,7 +71,7 @@ Endpoint variability is centered terminal elbow SD as a percentage of 20°;
 peak velocity is the mean per-trial maximum absolute elbow velocity, with SEM.
 Both analyses use Figure 2's gain log-pseudodeterminants: sum natural logs of
 singular values above `1e-6`, then average indices `2:38`. Frobenius summaries
-are also retained. Costs are evaluated analytically in the true system;
+are also reported. Costs are evaluated analytically in the true system;
 percentage changes use the correctly specified,
 zero-internal-noise baseline. Assumed-model costs are stored separately.
 
