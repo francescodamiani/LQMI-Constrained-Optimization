@@ -4,8 +4,7 @@ include(joinpath(@__DIR__,"..","..","..","..","src","project.jl"))
 include(joinpath(@__DIR__,"..","..","benchmark_tables.jl"))
 include(joinpath(@__DIR__,"noise_statistics.jl"))
 
-function noise_options(args)
-    experiments = ["behavioral","original_ablation","high_noise"]
+function noise_options(args;experiments=["behavioral","original_ablation","high_noise"])
     reoptimize = "--reoptimize" in args
     common_args = String[]
     for arg in args
@@ -16,6 +15,7 @@ function noise_options(args)
             push!(common_args,arg)
         end
     end
+    experiments = [name == "baseline_ablation" ? "original_ablation" : name for name in experiments]
     !isempty(experiments) && all(in(["behavioral","original_ablation","high_noise"]),experiments) || error("Unknown noise experiment")
     length(unique(experiments)) == length(experiments) || error("Repeated noise experiment")
     options = benchmark_options(common_args,"Arm_redundant_task/Noise_ablation")
@@ -23,13 +23,17 @@ function noise_options(args)
     return merge(options,(;experiments,reoptimize))
 end
 
-function noise_ablation_main(args=ARGS)
+function noise_ablation_main(args=ARGS;experiments=["behavioral","original_ablation","high_noise"])
     if "--help" in args
         println("""
         Redundant-arm stabilization: behavioral variability and fixed-policy noise ablations.
           julia scripts/Appendix/Arm_redundant_task/Noise_ablation/noise_ablation.jl
           Default: tables from the included numerical archives; no simulation or plots.
-          --experiment=behavioral,original_ablation,high_noise   choose experiments (default: all)
+          behavioral_variability.jl       physical-state variability across internal-noise levels
+          baseline_noise_ablation.jl      fixed-gain ablations in the baseline noise regime
+          high_sensory_motor_noise.jl     TOD/LCO comparison and ablations with increased sensory/motor noise
+          --experiment=behavioral,baseline_ablation,high_noise   choose experiments
+          Default analyses: $(join(replace.(experiments,"original_ablation"=>"baseline_ablation"),","))
           --simulate      explicitly rerun selected analyses and save numerical results
           --reoptimize    also recompute baseline-regime full-model policies; never ablated policies
           --validate      with --simulate, use a reduced, clearly marked numerical configuration
@@ -37,13 +41,13 @@ function noise_ablation_main(args=ARGS)
           --data=DIR      print an existing numerical run without recomputation
           --force         permit replacing numerical files inside an existing generated tag
         Baseline analyses reuse archived full-model gains unless --reoptimize is requested.
-        High-noise runs always solve TOD/LCO independently at each full-model noise level.
+        High-noise runs recompute TOD and initialize LCO from TOD at each full-model noise level.
         Data: data/published/Appendix/Arm_redundant_task/Noise_ablation/.
         New runs: data/generated/Appendix/Arm_redundant_task/Noise_ablation/TAG/.
         """)
         return
     end
-    options = noise_options(args)
+    options = noise_options(args;experiments)
     if options.simulate
         prepare_generated_directory(options.data_dir,"data";force=options.force)
         include(joinpath(PROJECT_ROOT,"src","MyFunctionsOptimalRegularizedSolutions.jl"))

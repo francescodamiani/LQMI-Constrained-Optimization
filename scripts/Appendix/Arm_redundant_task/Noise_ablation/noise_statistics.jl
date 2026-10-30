@@ -97,7 +97,7 @@ function print_noise_experiments(results;io=stdout)
     if haskey(results,"behavioral")
         data = results["behavioral"]
         tables = behavioral_tables(data)
-        println(io,"Behavioral variability — ",benchmark_run_label(data),"; LCO, ",data["N_trials_MC"]," trials/condition")
+        println(io,"1. Behavioral variability — ",benchmark_run_label(data),"; LCO, ",data["N_trials_MC"]," trials/condition")
         println(io,"SD = sqrt(mean_t sample_var_trials(x_i,t)); window ",first(data["temporal_window"]),":",last(data["temporal_window"]),".")
         print_benchmark_table(io,tables.sweep,vcat(["sigma_eta"=>:sigma_eta],[name=>Symbol(name) for name in ARM_COMPONENT_NAMES]))
         println(io,"\nChanges relative to zero internal noise (final grid value and maximum over the sweep):")
@@ -108,7 +108,7 @@ function print_noise_experiments(results;io=stdout)
     if haskey(results,"original_ablation")
         data = results["original_ablation"]
         tables = original_ablation_tables(data)
-        println(io,"\nBaseline-noise fixed-policy ablation — ",benchmark_run_label(data),"; LCO")
+        println(io,"\n2. Baseline-noise fixed-policy ablation — ",benchmark_run_label(data),"; LCO")
         println(io,"Sensory removal zeros BOTH additive sensory covariance and multiplicative sensory D. No reoptimization.")
         println(io,"Component SD-reduction ranges across the complete internal-noise sweep:")
         ranges = copy(tables.ranges)
@@ -122,8 +122,8 @@ function print_noise_experiments(results;io=stdout)
     if haskey(results,"high_noise")
         data = results["high_noise"]
         tables = high_noise_tables(data)
-        println(io,"\nHigh sensory/motor regime — ",benchmark_run_label(data),"; s=10, process amplitude stays 0.1")
-        println(io,"TOD/LCO independently optimized for each full-model internal-noise level:")
+        println(io,"\n3. High sensory/motor regime — ",benchmark_run_label(data),"; s=10, process amplitude stays 0.1")
+        println(io,"TOD recomputed and LCO initialized from TOD at each full-model internal-noise level:")
         # Show the archived cost comparison with full Float64 round-trip precision.
         costs = copy(tables.costs)
         for column in [:TOD_cost,:LCO_cost,:improvement_pct]

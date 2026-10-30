@@ -49,6 +49,8 @@ require `--force`.
 `arm_redundant_task.jl` is the entry point. `arm_task.jl` and `arm_statistics.jl`
 define the model and statistics; `Muscoskeletal_Internal_Noise_Sweep.jl` and
 `NonGaussian_Redundant_Arm.jl` run experiments, with matching `_Plots.jl` helpers.
-The [under-observed arm](Under_observed/README.md) and
-[noise-ablation](Noise_ablation/README.md) analyses have saved numerical data
-and print tables by default. See `--help` for options.
+The [behavioral variability and noise-source analyses](Noise_ablation/README.md)
+follow the paper's discussion in three parts: physical-state variability,
+baseline fixed-gain ablations, and the higher sensory/motor-noise regime.
+These and the [under-observed arm](Under_observed/README.md) analysis have saved
+numerical data and print tables by default. See `--help` for options.
