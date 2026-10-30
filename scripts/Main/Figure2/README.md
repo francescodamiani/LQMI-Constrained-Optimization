@@ -1,6 +1,10 @@
-# Figure 2: calibrated elbow reaching
+# Figure 2: calibrated elbow-reaching task
 
-Study a 20° elbow reach under increasing internal noise using TOD and LCO.
+Study a calibrated 20° elbow-reaching task under increasing internal noise
+using TOD and LCO. This main-paper task uses the same redundant three-joint
+arm as the [appendix stabilization task](../../Appendix/Arm_redundant_task/README.md).
+The tasks differ in their objectives, initial conditions, costs, noise settings
+and time horizons; here, the arm moves toward a target.
 
 ## Run
 

@@ -1,7 +1,13 @@
-# Redundant-arm task
+# Three-joint arm stabilization task
 
-Study stabilization of a three-joint arm: internal-noise effects on costs,
-gains, PCA structure and peak velocity, plus a non-Gaussian noise comparison.
+Study stabilization of the same redundant three-joint arm used in the
+[calibrated reaching task](../../Main/Figure2/README.md) in the main paper.
+Here, the arm starts at a reference posture and must maintain it under
+stochastic disturbances. This appendix task is a structured benchmark,
+without calibration to a specific human experiment.
+
+Analyses cover internal-noise effects on costs, gains, PCA structure and peak
+velocity, plus a non-Gaussian noise comparison.
 
 ## Run
 
