@@ -29,8 +29,7 @@ Task seeds are 61235, 81235 and 101235. TOD uses 500 iterations; LCO uses
 Direct GD starts from TOD and runs for up to 10,000 iterations.
 
 Saved LCO improvements over TOD are 34.9613%, 65.7148% and 60.1891%.
-All GD runs reached their iteration limit; dimension-8/10 LCO histories have
-small positive increments. Final gains are not included, so objectives
+All GD runs reached their iteration limit. Final gains are not included, so objectives
 cannot be reevaluated from saved policies without a rerun.
 Timings include machine and compilation effects.
 
